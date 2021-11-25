@@ -1,7 +1,7 @@
 {
-  "name": "affixi-v2",
-  "version": "1.0.0",
-  "description": "AffixiV2 is a helper library for Turkish suffixes for nouns and proper nouns written in typescript.",
+  "name": "affixi",
+  "version": "0.0.1",
+  "description": "Affixi is a helper library for Turkish suffixes for nouns and proper nouns written in typescript.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CanPacis/affixi-v2.git"
+    "url": "git+https://github.com/CanPacis/affixi.git"
   },
   "keywords": [
     "Türkçe",
@@ -31,9 +31,9 @@
   "author": "Muhammed Ali CAN",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/CanPacis/affixi-v2/issues"
+    "url": "https://github.com/CanPacis/affixi/issues"
   },
-  "homepage": "https://github.com/CanPacis/affixi-v2#readme",
+  "homepage": "https://github.com/CanPacis/affixi#readme",
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "jest": "^27.3.1",
