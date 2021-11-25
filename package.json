@@ -1,20 +1,53 @@
 {
   "name": "affixi-v2",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "AffixiV2 is a helper library for Turkish suffixes for nouns and proper nouns written in typescript.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config jestconfig.json",
+    "dev": "nodemon lib/dev.js",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CanPacis/affixi-v2.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "Türkçe",
+    "Turkish",
+    "Case Suffixes",
+    "Possesive Suffixes",
+    "Hâl Ekleri",
+    "İyelik Ekleri"
+  ],
+  "author": "Muhammed Ali CAN",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/CanPacis/affixi-v2/issues"
   },
-  "homepage": "https://github.com/CanPacis/affixi-v2#readme"
+  "homepage": "https://github.com/CanPacis/affixi-v2#readme",
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "jest": "^27.3.1",
+    "prettier": "^2.4.1",
+    "nodemon": "^2.0.15",
+    "ts-jest": "^27.0.7",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.5.2"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "dependencies": {
+    "tslib": "^2.3.1"
+  }
 }
