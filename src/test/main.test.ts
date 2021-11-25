@@ -110,5 +110,5 @@ test('Make possesive suffix', () => {
   expect(makePossesiveSuffix('Ağaç', Pronoun.PluralThird)).toBe('Ağaçları');
   expect(makePossesiveSuffix('Ayşe', Pronoun.SingularFirst, true)).toBe("Ayşe'm");
   expect(makePossesiveSuffix('Türkiye', Pronoun.SingularSecond, true)).toBe("Türkiye'n");
-  expect(makePossesiveSuffix('açık', Pronoun.PluralSecond)).toBe("açığınız");
+  expect(makePossesiveSuffix('açık', Pronoun.PluralSecond)).toBe('açığınız');
 });

@@ -104,7 +104,7 @@ export const getVoicedConsonant = (base: string, isProperNoun: boolean = false):
     const i = sounds.unvoicedStoppingConsonants.indexOf(base[base.length - 1]);
     let voicedCounterPart;
 
-    let isNK =
+    const isNK =
       base
         .split('')
         .slice(base.length - 2, base.length)
@@ -124,7 +124,7 @@ export const alterToVoicedConsonant = (base: string, isProperNoun: boolean = fal
   const voicedCounterPart = getVoicedConsonant(base, isProperNoun);
 
   if (voicedCounterPart) {
-    let result =
+    const result =
       base
         .split('')
         .splice(0, base.length - 1)
@@ -145,12 +145,12 @@ export const alterToVowelDrop = (base: string): string => {
   const word = base.trim();
 
   if (
-    util.getSyllableCount(base) == 2 &&
+    util.getSyllableCount(base) === 2 &&
     sounds.acuteVowels.includes(vowel) &&
     exceptions.vowelDrop.includes(word.toLocaleLowerCase())
   ) {
     // Remove the last vowel e.g 'Akıl' -> 'Akl'
-    let result = word.split('').reverse().join('').replace(vowel, '').split('').reverse().join('');
+    const result = word.split('').reverse().join('').replace(vowel, '').split('').reverse().join('');
     return result;
   }
 
@@ -158,7 +158,8 @@ export const alterToVowelDrop = (base: string): string => {
 };
 
 /** Returns the plural suffix for a given word -
- * Verilen kelimenin çoğul ekini dödürür */
+ * Verilen kelimenin çoğul ekini dödürür
+ */
 export const getPlural = (base: string): string => {
   const { vowel } = util.getComponents(base);
   let result: string;
@@ -175,13 +176,15 @@ export const getPlural = (base: string): string => {
 };
 
 /** Transforms a given word into plural form -
- * Verilen kelimeyi çoğul hale getirir */
+ * Verilen kelimeyi çoğul hale getirir
+ */
 export const makePlural = (base: string): string => {
   return `${base}${getPlural(base)}`;
 };
 
 /** Returns the equality suffix for a given word -
- * Verilen kelimenin eşitlik ekini dödürür; e.g 'Çocuk' -> 'ça' */
+ * Verilen kelimenin eşitlik ekini dödürür; e.g 'Çocuk' -> 'ça'
+ */
 export const getEqual = (base: string): string => {
   const { vowel, letter } = util.getComponents(base);
   let result = '';
@@ -204,13 +207,15 @@ export const getEqual = (base: string): string => {
 };
 
 /** Transforms a given word into equal form -
- * Verilen kelimeye eşitlik ekini ekler; e.g 'Çocuk' -> 'Çocukça' */
+ * Verilen kelimeye eşitlik ekini ekler; e.g 'Çocuk' -> 'Çocukça'
+ */
 export const makeEqual = (base: string): string => {
   return `${base}${getEqual(base)}`;
 };
 
 /** Returns the possesive suffix for a given word and pronoun -
- * Verilen kelimeye ve zamire uygun iyelik ekini döndürür */
+ * Verilen kelimeye ve zamire uygun iyelik ekini döndürür
+ */
 export const getPossesiveSuffix = (base: string, pronoun: Pronoun): string => {
   const { vowel, letter } = util.getComponents(base);
   let result = '';
@@ -303,6 +308,9 @@ export const getPossesiveSuffix = (base: string, pronoun: Pronoun): string => {
   return result;
 };
 
+/** Concatenates the word with the possesive suffix for a given base and pronoun -
+ * Verilen kelimeye ve zamire uygun iyelik ekini ekler; e.g 'Çocuk' -> 'Çocukça'
+ */
 export const makePossesiveSuffix = (base: string, pronoun: Pronoun, isProperNoun: boolean = false): string => {
   const suffix = getPossesiveSuffix(base, pronoun);
   const firstLetter = suffix[0];
