@@ -59,6 +59,7 @@ test('Make noun equal', () => {
   expect(makeEqual('Bebek')).toBe('Bebekçe');
   expect(makeEqual('akıllı')).toBe('akıllıca');
   expect(makeEqual('sebepsiz')).toBe('sebepsizce');
+  expect(makeEqual('sen')).toBe('sence');
 });
 
 test('Query voiced consonant counterpart', () => {
