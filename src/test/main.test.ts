@@ -153,9 +153,9 @@ test('Query case suffix', () => {
 
 test('Make noun case', () => {
   expect(makeCase('Kağıt', Case.Accusative)).toBe('Kağıdı');
-  expect(makeCase('Ev', Case.Ablative)).toBe('Evden');
   expect(makeCase(makePossesive('Ses', Pronoun.SingularThird), Case.Instrumental)).toBe('Sesiyle');
   expect(makeCase(makePossesive('Ses', Pronoun.SingularThird), Case.Ablative)).toBe('Sesinden');
+  expect(makeCase('Ev', Case.Ablative)).toBe('Evden');
   expect(makeCase('Şehir', Case.Dative)).toBe('Şehre');
   expect(makeCase('Sinema', Case.Dative)).toBe('Sinemaya');
   expect(makeCase('Kalem', Case.Instrumental)).toBe('Kalemle');
@@ -165,7 +165,9 @@ test('Make noun case', () => {
   expect(makeCase('Hanı', Case.Locative)).toBe('Hanında');
   expect(makeCase('Hanı', Case.Accusative)).toBe('Hanını');
   expect(makeCase('Hanı', Case.Locative, true)).toBe("Hanı'nda");
-  expect(makeCase(makePossesive("Ongözlü Köprü", Pronoun.SingularThird), Case.Locative, true)).toBe("Ongözlü Köprüsü'nde");
+  expect(makeCase(makePossesive('Ongözlü Köprü', Pronoun.SingularThird), Case.Locative, true)).toBe(
+    "Ongözlü Köprüsü'nde",
+  );
   expect(makeCase('Hasan Paşa Hanı', Case.Locative, true)).toBe("Hasan Paşa Hanı'nda");
   expect(makeCase('Diyarbakır Ulu Cami', Case.Locative, true)).toBe("Diyarbakır Ulu Cami'nde");
 });

@@ -114,6 +114,10 @@ export const exceptions = {
   ],
 };
 
+/** Some words that end with an unvoiced consonants (p,ç,t,k) may be converted into their voiced counterparts (b,c,d,ğ).
+ * If extist, this function returns the voiced consonant. If not returns undefined -
+ * Eğer kelime sert ünsüz ile bitiyorsa, ünsüzün yumuşak halini, bitmiyorsa undefined döndürür
+ */
 export const getVoicedConsonant = (base: string, isProperNoun: boolean = false): string | undefined => {
   const { letter } = util.getComponents(base);
   if (
@@ -142,6 +146,11 @@ export const getVoicedConsonant = (base: string, isProperNoun: boolean = false):
   return;
 };
 
+/** This function returns the mutated version of a word with its voiced consonant. If base does not have a voiced counterpart, the base itself is returned -
+ * Kelimenin sonunda sert ünsüz varsa, sert ünsüzü yumuşak haliyle değiştirir, yoksa kelimenin kendisini döndürür
+ * 'Renk' -> 'Reng'
+ * 'Akıl' -> 'Akıl'
+ */
 export const alterToVoicedConsonant = (base: string, isProperNoun: boolean = false): string => {
   const voicedCounterPart = getVoicedConsonant(base, isProperNoun);
 
@@ -351,7 +360,7 @@ export const getPossesiveSuffix = (base: string, pronoun: Pronoun): string => {
 };
 
 /** Concatenates the word with the possesive suffix for a given base and pronoun -
- * Verilen kelimeye ve zamire uygun iyelik ekini ekler; e.g 'Çocuk' -> 'Çocukça'
+ * Verilen kelimeye ve zamire uygun iyelik ekini ekler
  */
 export const makePossesive = (base: string, pronoun: Pronoun, isProperNoun: boolean = false): string => {
   const suffix = getPossesiveSuffix(base, pronoun);
@@ -366,7 +375,7 @@ export const makePossesive = (base: string, pronoun: Pronoun, isProperNoun: bool
   }
 
   const punctuation = isProperNoun ? "'" : '';
-  return `${root}${punctuation}${suffix}`;
+  return root + punctuation + suffix;
 };
 
 /** Returns the completion suffix for a given base -
@@ -409,9 +418,12 @@ export const makeComplete = (base: string, isProperNoun: boolean = false): strin
   }
 
   const punctuation = isProperNoun ? "'" : '';
-  return `${root}${punctuation}${suffix}`;
+  return root + punctuation + suffix;
 };
 
+/** Returns the appropriate case suffix for a given base word and a case -
+ * Verilen kelimeye ve hâle uygun hâl ekini döndürür.
+ */
 export const getCaseSuffix = (base: string, _case: Case): string => {
   const { vowel, letter } = util.getComponents(base);
   let result: string;
@@ -501,10 +513,13 @@ export const getCaseSuffix = (base: string, _case: Case): string => {
   return infix + result;
 };
 
+/** Returns the word base concatenated with the appropriate case suffix for a given base word and a case
+ * Verilen kelimeye uygun hâl ekini ekler
+ */
 export const makeCase = (base: string, _case: Case, isProperNoun: boolean = false): string => {
-  let suffix = getCaseSuffix(base, _case);
+  const suffix = getCaseSuffix(base, _case);
+  const punctuation = isProperNoun ? "'" : '';
   let word = _case === Case.Absolute ? base : alterToVoicedConsonant(base);
-  let punctuation = isProperNoun ? "'" : '';
   const firstLetter = suffix[0];
 
   if (sounds.vowels.includes(firstLetter)) {

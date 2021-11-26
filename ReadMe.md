@@ -14,6 +14,8 @@ A helper library for Turkish noun suffixes written in typescript.
 - [makePossesive](#makePossesive)
 - [getCompleteSuffix](#getCompleteSuffix)
 - [makeComplete](#makeComplete)
+- [getCaseSuffix](#getCaseSuffix)
+- [makeCase](#makeCase)
 - [getVoicedConsonant](#getVoicedConsonant)
 - [alterToVoicedConsonant](#alterToVoicedConsonant)
 - [alterToVowelDrop](#alterToVowelDrop)
@@ -28,6 +30,7 @@ A helper library for Turkish noun suffixes written in typescript.
 ### Enums
 
 - [Pronoun](#pronoun)
+- [Case](#case)
 
 ## Usage
 
@@ -38,6 +41,7 @@ import { makePlural, makePossesive, Pronoun } from 'affixi';
 
 makePlural('O'); // Onlar
 makePossesive('Akıl', Pronoun.PluralFirst); // Aklımız
+makeCase(makePossesive('Ongözlü Köprü', Pronoun.SingularThird), Case.Locative, true); // Ongözlü Köprüsü'nde
 ```
 
 ## Reference
@@ -155,6 +159,30 @@ e.g:
 - Onlar > Onların
 - Eller > Ellerin
 
+#### getCaseSuffix
+
+```typescript
+getCaseSuffix(base: string, _case: Case) => string
+```
+
+Returns the appropriate case suffix for a given base word and a [case](#case)
+
+- `makeCase('Ev', Case.Ablative) // den`
+- `makeCase('Şehir', Case.Dative) // e`
+- `makeCase('Sinema', Case.Dative) // ya`
+
+#### makeCase
+
+```typescript
+makeCase(base: string, _case: Case) => string
+```
+
+Returns the word base concatenated with the appropriate case suffix for a given base word and a [case](#case)
+
+- `makeCase('Ev', Case.Ablative) // Evden`
+- `makeCase('Şehir', Case.Dative) // Şehre`
+- `makeCase('Sinema', Case.Dative) // Sinemaya`
+
 #### getVoicedConsonant
 
 ```typescript
@@ -198,7 +226,7 @@ Some two syllable words that has acute vowels in their last syllable drop that v
 
 Some utility functions that may help word generation.
 
-- ##### getComponents
+##### getComponents
 
 ```typescript
 util.getComponents(base: string) => WordComponent
@@ -217,15 +245,13 @@ export interface WordComponent {
 - Oyuncak > `{ letter: "k", vowel: "a" }`
 - Sebep > `{ letter: "p", vowel: "e" }`
 
-- ##### getSyllableCount
+##### getSyllableCount
 
 ```typescript
 util.getSyllableCount(base: string) => number
 ```
 
-This method returns the syllable count of a base word. Almost always the syllabale count of a word is equal to the vowel count of a word in Turkish becaase the stress is delimited by vowels.
-
-muvaffak
+This method returns the syllable count of a base word. Almost always the syllabale count of a word is equal to the vowel count of a word in Turkish because the stress is delimited by vowels.
 
 - Muvaffak > 3
 - Elma > 2
@@ -270,3 +296,18 @@ enum Pronoun {
 ```
 
 I think this one is pretty self-explanatory.
+
+#### Case
+
+```typescript
+enum Case {
+  Absolute,
+  Accusative,
+  Ablative,
+  Locative,
+  Instrumental,
+  Dative,
+}
+```
+
+Turkish noun case names.
