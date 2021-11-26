@@ -174,12 +174,14 @@ Returns the appropriate case suffix for a given base word and a [case](#case)
 #### makeCase
 
 ```typescript
-makeCase(base: string, _case: Case) => string
+makeCase(base: string, _case: Case, isProperNoun: boolean = false) => string
 ```
 
 Returns the word base concatenated with the appropriate case suffix for a given base word and a [case](#case)
+Proper nouns are seperated with and apostrophe character.
 
 - `makeCase('Ev', Case.Ablative) // Evden`
+- `makeCase('Balıkesir', Case.Ablative, true) // Balıkesir'den`
 - `makeCase('Şehir', Case.Dative) // Şehre`
 - `makeCase('Sinema', Case.Dative) // Sinemaya`
 
@@ -286,12 +288,12 @@ interface sounds {
 
 ```typescript
 enum Pronoun {
-  SingularFirst,
-  SingularSecond,
-  SingularThird,
-  PluralFirst,
-  PluralSecond,
-  PluralThird,
+  SingularFirst, // I
+  SingularSecond, // You (singular)
+  SingularThird, // He/She/It
+  PluralFirst, // We
+  PluralSecond, // You (plural)
+  PluralThird, // They
 }
 ```
 
@@ -302,11 +304,11 @@ I think this one is pretty self-explanatory.
 ```typescript
 enum Case {
   Absolute,
-  Accusative,
-  Ablative,
-  Locative,
-  Instrumental,
-  Dative,
+  Accusative, // -i
+  Ablative, // -den
+  Locative, // -de
+  Instrumental, // -le
+  Dative, // -e
 }
 ```
 
