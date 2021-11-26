@@ -18,6 +18,21 @@ export enum Pronoun {
   PluralThird,
 }
 
+export enum Case {
+  /** İsmin Yalın Hâli - */
+  Absolute,
+  /** İsmin Belirtme Hâli -i */
+  Accusative,
+  /** İsmin Ayrılma Hâli -den */
+  Ablative,
+  /** İsmin Bulunma Hâli -de */
+  Locative,
+  /** İsmin Vasıta Hâli -ile */
+  Instrumental,
+  /** İsmin Yönelme Hâli -e */
+  Dative,
+}
+
 interface Util {
   duplicateToUppercase: (list: string[]) => string[];
   getComponents: (base: string) => WordComponent;
@@ -395,4 +410,106 @@ export const makeComplete = (base: string, isProperNoun: boolean = false): strin
 
   const punctuation = isProperNoun ? "'" : '';
   return `${root}${punctuation}${suffix}`;
+};
+
+export const getCaseSuffix = (base: string, _case: Case): string => {
+  const { vowel, letter } = util.getComponents(base);
+  let result: string;
+  let infix = '';
+
+  switch (_case) {
+    case Case.Absolute:
+      result = '';
+      break;
+    case Case.Accusative:
+      if (sounds.vowels.includes(letter)) {
+        infix = 'n';
+      }
+
+      if (sounds.frontVowels.includes(vowel)) {
+        if (sounds.roundedVowels.includes(vowel)) {
+          result = 'u';
+        } else {
+          result = 'ı';
+        }
+      } else {
+        if (sounds.roundedVowels.includes(vowel)) {
+          result = 'ü';
+        } else {
+          result = 'i';
+        }
+      }
+      break;
+    case Case.Ablative:
+      if (sounds.vowels.includes(letter)) {
+        infix = 'n';
+      }
+
+      if (sounds.unvoicedConsonants.includes(letter)) {
+        result = 't';
+      } else {
+        result = 'd';
+      }
+
+      if (sounds.frontVowels.includes(vowel)) {
+        result += 'an';
+      } else {
+        result += 'en';
+      }
+      break;
+    case Case.Locative:
+      if (sounds.vowels.includes(letter)) {
+        infix = 'n';
+      }
+
+      if (sounds.unvoicedConsonants.includes(letter)) {
+        result = 't';
+      } else {
+        result = 'd';
+      }
+
+      if (sounds.frontVowels.includes(vowel)) {
+        result += 'a';
+      } else {
+        result += 'e';
+      }
+      break;
+    case Case.Instrumental:
+      if (sounds.vowels.includes(letter)) {
+        infix = 'y';
+      }
+
+      if (sounds.frontVowels.includes(vowel)) {
+        result = 'la';
+      } else {
+        result = 'le';
+      }
+      break;
+    case Case.Dative:
+      if (sounds.vowels.includes(letter)) {
+        infix = 'y';
+      }
+
+      if (sounds.frontVowels.includes(vowel)) {
+        result = 'a';
+      } else {
+        result = 'e';
+      }
+      break;
+  }
+
+  return infix + result;
+};
+
+export const makeCase = (base: string, _case: Case, isProperNoun: boolean = false): string => {
+  let suffix = getCaseSuffix(base, _case);
+  let word = _case === Case.Absolute ? base : alterToVoicedConsonant(base);
+  let punctuation = isProperNoun ? "'" : '';
+  const firstLetter = suffix[0];
+
+  if (sounds.vowels.includes(firstLetter)) {
+    word = alterToVowelDrop(word);
+  }
+
+  return word + punctuation + suffix;
 };
