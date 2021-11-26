@@ -1,16 +1,18 @@
 import {
   util,
   sounds,
-  getPlural,
+  getPluralSuffix,
   makePlural,
-  getEqual,
+  getEqualitySuffix,
   makeEqual,
   getVoicedConsonant,
   alterToVoicedConsonant,
   getPossesiveSuffix,
   alterToVowelDrop,
-  makePossesiveSuffix,
+  makePossesive,
   Pronoun,
+  getCompleteSuffix,
+  makeComplete,
 } from '../main';
 
 test('Component getter', () => {
@@ -31,10 +33,10 @@ test('Sounds object generation', () => {
 });
 
 test('Query plural', () => {
-  expect(getPlural('Araba')).toBe('lar');
-  expect(getPlural('İsim')).toBe('ler');
-  expect(getPlural('kanaat')).toBe('lar');
-  expect(getPlural('elit')).toBe('ler');
+  expect(getPluralSuffix('Araba')).toBe('lar');
+  expect(getPluralSuffix('İsim')).toBe('ler');
+  expect(getPluralSuffix('kanaat')).toBe('lar');
+  expect(getPluralSuffix('elit')).toBe('ler');
 });
 
 test('Create plural', () => {
@@ -42,16 +44,17 @@ test('Create plural', () => {
   expect(makePlural('İsim')).toBe('İsimler');
   expect(makePlural('kanaat')).toBe('kanaatlar');
   expect(makePlural('elit')).toBe('elitler');
+  expect(makePlural('O')).toBe('Onlar');
 });
 
-test('Query equality', () => {
-  expect(getEqual('Çocuk')).toBe('ça');
-  expect(getEqual('Bebek')).toBe('çe');
-  expect(getEqual('akıllı')).toBe('ca');
-  expect(getEqual('sebepsiz')).toBe('ce');
+test('Query equality suffix', () => {
+  expect(getEqualitySuffix('Çocuk')).toBe('ça');
+  expect(getEqualitySuffix('Bebek')).toBe('çe');
+  expect(getEqualitySuffix('akıllı')).toBe('ca');
+  expect(getEqualitySuffix('sebepsiz')).toBe('ce');
 });
 
-test('Create equality', () => {
+test('Make noun equal', () => {
   expect(makeEqual('Çocuk')).toBe('Çocukça');
   expect(makeEqual('Bebek')).toBe('Bebekçe');
   expect(makeEqual('akıllı')).toBe('akıllıca');
@@ -99,16 +102,38 @@ test('Query possesive suffix', () => {
   expect(getPossesiveSuffix('Akıl', Pronoun.PluralFirst)).toBe('ımız');
   expect(getPossesiveSuffix('Merak', Pronoun.PluralSecond)).toBe('ınız');
   expect(getPossesiveSuffix('Ağaç', Pronoun.PluralThird)).toBe('ları');
+  expect(getPossesiveSuffix('araba', Pronoun.SingularThird)).toBe('sı');
+  expect(getPossesiveSuffix('araba', Pronoun.SingularFirst)).toBe('m');
+  expect(getPossesiveSuffix('kaçak', Pronoun.SingularThird)).toBe('ı');
+  expect(getPossesiveSuffix('bitki', Pronoun.SingularThird)).toBe('si');
 });
 
-test('Make possesive suffix', () => {
-  expect(makePossesiveSuffix('Çocuk', Pronoun.SingularFirst)).toBe('Çocuğum');
-  expect(makePossesiveSuffix('Bebek', Pronoun.SingularSecond)).toBe('Bebeğin');
-  expect(makePossesiveSuffix('Sebep', Pronoun.SingularThird)).toBe('Sebebi');
-  expect(makePossesiveSuffix('Akıl', Pronoun.PluralFirst)).toBe('Aklımız');
-  expect(makePossesiveSuffix('Merak', Pronoun.PluralSecond)).toBe('Merakınız');
-  expect(makePossesiveSuffix('Ağaç', Pronoun.PluralThird)).toBe('Ağaçları');
-  expect(makePossesiveSuffix('Ayşe', Pronoun.SingularFirst, true)).toBe("Ayşe'm");
-  expect(makePossesiveSuffix('Türkiye', Pronoun.SingularSecond, true)).toBe("Türkiye'n");
-  expect(makePossesiveSuffix('açık', Pronoun.PluralSecond)).toBe('açığınız');
+test('Make noun possesive', () => {
+  expect(makePossesive('Çocuk', Pronoun.SingularFirst)).toBe('Çocuğum');
+  expect(makePossesive('Bebek', Pronoun.SingularSecond)).toBe('Bebeğin');
+  expect(makePossesive('Sebep', Pronoun.SingularThird)).toBe('Sebebi');
+  expect(makePossesive('Akıl', Pronoun.PluralFirst)).toBe('Aklımız');
+  expect(makePossesive('Merak', Pronoun.PluralSecond)).toBe('Merakınız');
+  expect(makePossesive('Ağaç', Pronoun.PluralThird)).toBe('Ağaçları');
+  expect(makePossesive('Ayşe', Pronoun.SingularFirst, true)).toBe("Ayşe'm");
+  expect(makePossesive('Türkiye', Pronoun.SingularSecond, true)).toBe("Türkiye'n");
+  expect(makePossesive('açık', Pronoun.PluralSecond)).toBe('açığınız');
+  expect(makePossesive('araba', Pronoun.SingularThird)).toBe('arabası');
+  expect(makePossesive('kaçak', Pronoun.SingularThird)).toBe('kaçağı');
+  expect(makePossesive('bitki', Pronoun.SingularThird)).toBe('bitkisi');
+  expect(makePossesive('renk', Pronoun.SingularThird)).toBe('rengi');
+  expect(makePossesive('Uç', Pronoun.SingularThird)).toBe('Ucu');
+  expect(makePossesive('Süt', Pronoun.SingularThird)).toBe('Sütü');
+});
+
+test('Query complete suffix', () => {
+  expect(getCompleteSuffix(makePlural('Araba'))).toBe('ın');
+  expect(getCompleteSuffix(makePlural('O'))).toBe('ın');
+});
+
+test('Make noun complete', () => {
+  expect(makeComplete(makePlural('O'))).toBe('Onların');
+  expect(`${makeComplete(makePlural('O'))} ${makePossesive("araba", Pronoun.PluralThird)}`).toBe('Onların arabaları');
+  expect(makeComplete("araç")).toBe("aracın")
+  expect(`${makeComplete("araç")} ${makePossesive("renk", Pronoun.SingularThird)}`).toBe("aracın rengi")
 });

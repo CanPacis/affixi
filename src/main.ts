@@ -71,7 +71,13 @@ export const sounds = {
 };
 
 export const exceptions = {
+  /** Unvoiced exceptions that does not soften with a vowel suffix immediately after */
   unvoiced: ['hukuk', 'bilet', 'tabiat', 'devlet', 'bisiklet', 'millet', 'ahret', 'ahiret', 'merak'],
+  /** Unvoiced single syllable exceptions that does soften with a vowel suffix immediately after */
+  unvoicedSingleSyllable: ['uç'],
+  /** Unvoiced single syllable exceptions that does soften with a vowel suffix immediately after */
+  plural: ['o'],
+  /** Limited list of words that drop their vowe upon a cretain condition */
   vowelDrop: [
     'oğul',
     'bağır',
@@ -96,7 +102,6 @@ export const exceptions = {
 export const getVoicedConsonant = (base: string, isProperNoun: boolean = false): string | undefined => {
   const { letter } = util.getComponents(base);
   if (
-    util.getSyllableCount(base) > 1 &&
     sounds.unvoicedStoppingConsonants.includes(letter) &&
     !isProperNoun &&
     !exceptions.unvoiced.includes(base.toLocaleLowerCase())
@@ -112,7 +117,9 @@ export const getVoicedConsonant = (base: string, isProperNoun: boolean = false):
     if (isNK) {
       voicedCounterPart = 'g';
     } else {
-      voicedCounterPart = sounds.voicedStoppingConsonants[i];
+      if (util.getSyllableCount(base) > 1 || exceptions.unvoicedSingleSyllable.includes(base.toLocaleLowerCase())) {
+        voicedCounterPart = sounds.voicedStoppingConsonants[i];
+      }
     }
 
     return voicedCounterPart;
@@ -160,9 +167,10 @@ export const alterToVowelDrop = (base: string): string => {
 /** Returns the plural suffix for a given word -
  * Verilen kelimenin çoğul ekini dödürür
  */
-export const getPlural = (base: string): string => {
+export const getPluralSuffix = (base: string): string => {
   const { vowel } = util.getComponents(base);
   let result: string;
+  let infix = '';
 
   if (sounds.frontVowels.includes(vowel)) {
     result = 'lar';
@@ -172,20 +180,24 @@ export const getPlural = (base: string): string => {
     throw Error('Unknown vowel');
   }
 
-  return result;
+  if (exceptions.plural.includes(base.toLocaleLowerCase())) {
+    infix = 'n';
+  }
+
+  return infix + result;
 };
 
 /** Transforms a given word into plural form -
  * Verilen kelimeyi çoğul hale getirir
  */
 export const makePlural = (base: string): string => {
-  return `${base}${getPlural(base)}`;
+  return `${base}${getPluralSuffix(base)}`;
 };
 
 /** Returns the equality suffix for a given word -
  * Verilen kelimenin eşitlik ekini dödürür; e.g 'Çocuk' -> 'ça'
  */
-export const getEqual = (base: string): string => {
+export const getEqualitySuffix = (base: string): string => {
   const { vowel, letter } = util.getComponents(base);
   let result = '';
 
@@ -210,7 +222,7 @@ export const getEqual = (base: string): string => {
  * Verilen kelimeye eşitlik ekini ekler; e.g 'Çocuk' -> 'Çocukça'
  */
 export const makeEqual = (base: string): string => {
-  return `${base}${getEqual(base)}`;
+  return `${base}${getEqualitySuffix(base)}`;
 };
 
 /** Returns the possesive suffix for a given word and pronoun -
@@ -219,39 +231,54 @@ export const makeEqual = (base: string): string => {
 export const getPossesiveSuffix = (base: string, pronoun: Pronoun): string => {
   const { vowel, letter } = util.getComponents(base);
   let result = '';
+  let infix = '';
   let vowelSuffix: string;
 
-  if (!sounds.vowels.includes(letter) && pronoun !== Pronoun.PluralThird) {
-    if (sounds.frontVowels.includes(vowel)) {
-      if (sounds.roundedVowels.includes(vowel)) {
-        result += 'u';
-        vowelSuffix = 'u';
+  if (sounds.vowels.includes(letter)) {
+    if (pronoun === Pronoun.SingularThird) {
+      infix = 's';
+
+      if (sounds.frontVowels.includes(vowel)) {
+        if (sounds.roundedVowels.includes(vowel)) {
+          result += 'u';
+          vowelSuffix = 'u';
+        } else {
+          result += 'ı';
+          vowelSuffix = 'ı';
+        }
       } else {
-        result += 'ı';
-        vowelSuffix = 'ı';
+        if (sounds.roundedVowels.includes(vowel)) {
+          result += 'ü';
+          vowelSuffix = 'ü';
+        } else {
+          result += 'i';
+          vowelSuffix = 'i';
+        }
       }
     } else {
-      if (sounds.roundedVowels.includes(vowel)) {
-        result += 'ü';
-        vowelSuffix = 'ü';
-      } else {
-        result += 'i';
-        vowelSuffix = 'i';
-      }
+      vowelSuffix = '';
     }
   } else {
-    if (sounds.frontVowels.includes(vowel)) {
-      if (sounds.roundedVowels.includes(vowel)) {
-        vowelSuffix = 'u';
+    if (pronoun !== Pronoun.PluralThird) {
+      if (sounds.frontVowels.includes(vowel)) {
+        if (sounds.roundedVowels.includes(vowel)) {
+          result += 'u';
+          vowelSuffix = 'u';
+        } else {
+          result += 'ı';
+          vowelSuffix = 'ı';
+        }
       } else {
-        vowelSuffix = 'ı';
+        if (sounds.roundedVowels.includes(vowel)) {
+          result += 'ü';
+          vowelSuffix = 'ü';
+        } else {
+          result += 'i';
+          vowelSuffix = 'i';
+        }
       }
     } else {
-      if (sounds.roundedVowels.includes(vowel)) {
-        vowelSuffix = 'ü';
-      } else {
-        vowelSuffix = 'i';
-      }
+      vowelSuffix = '';
     }
   }
 
@@ -305,14 +332,57 @@ export const getPossesiveSuffix = (base: string, pronoun: Pronoun): string => {
       break;
   }
 
-  return result;
+  return infix + result;
 };
 
 /** Concatenates the word with the possesive suffix for a given base and pronoun -
  * Verilen kelimeye ve zamire uygun iyelik ekini ekler; e.g 'Çocuk' -> 'Çocukça'
  */
-export const makePossesiveSuffix = (base: string, pronoun: Pronoun, isProperNoun: boolean = false): string => {
+export const makePossesive = (base: string, pronoun: Pronoun, isProperNoun: boolean = false): string => {
   const suffix = getPossesiveSuffix(base, pronoun);
+  const firstLetter = suffix[0];
+  let root: string;
+
+  const word = alterToVowelDrop(base);
+  if (sounds.vowels.includes(firstLetter)) {
+    root = alterToVoicedConsonant(word);
+  } else {
+    root = word;
+  }
+
+  const punctuation = isProperNoun ? "'" : '';
+  return `${root}${punctuation}${suffix}`;
+};
+
+/** Returns the completion suffix for a given base -
+ * Verilen kelimeye uygun tamlayan ekini döndürür; e.g 'Araç' -> 'ın'
+ */
+export const getCompleteSuffix = (base: string): string => {
+  const { vowel } = util.getComponents(base);
+  let result: string;
+
+  if (sounds.frontVowels.includes(vowel)) {
+    if (sounds.roundedVowels.includes(vowel)) {
+      result = 'un';
+    } else {
+      result = 'ın';
+    }
+  } else {
+    if (sounds.roundedVowels.includes(vowel)) {
+      result = 'ün';
+    } else {
+      result = 'in';
+    }
+  }
+
+  return result;
+};
+
+/** Concatenates the word with the completion suffix for a given base -
+ * Verilen kelimeye uygun tamlayan ekini ekler; e.g 'Araç' -> 'Aracın'
+ */
+export const makeComplete = (base: string, isProperNoun: boolean = false): string => {
+  const suffix = getCompleteSuffix(base);
   const firstLetter = suffix[0];
   let root: string;
 
