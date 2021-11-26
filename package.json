@@ -1,6 +1,6 @@
 {
   "name": "affixi",
-  "version": "0.0.1",
+  "version": "0.0.1-0",
   "description": "Affixi is a helper library for Turkish suffixes for nouns and proper nouns written in typescript.",
   "main": "lib/main.js",
   "types": "lib/main.d.ts",
@@ -12,7 +12,7 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
+    "version": "git add -A src",
     "postversion": "git push && git push --tags"
   },
   "repository": {
