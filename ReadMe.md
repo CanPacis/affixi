@@ -34,6 +34,12 @@ A helper library for Turkish noun suffixes written in typescript.
 
 ## Usage
 
+install
+
+```bash
+npm install affixi
+```
+
 There is no default export in the library, so you can import whatever you need and only the things you need. This makes the library tree-shakable.
 
 ```typescript
