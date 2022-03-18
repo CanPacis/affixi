@@ -157,13 +157,15 @@ e.g:
 makeComplete(base: string, isProperNoun: boolean = false) => string
 ```
 
-Returns the word base concatenated with the appropriate completion suffix for a given noun. If `isProperNoun` is true, the suffix is seperate with an apostrophe
+Returns the word base concatenated with the appropriate completion suffix for a given noun. If `isProperNoun` is set to true, the suffix is seperated with an apostrophe.
 
 e.g:
 
 - Araba > Araba(n)ın > Arabanın
 - Onlar > Onların
 - Eller > Ellerin
+- Eller > Ellerin 
+- Azerbaycan > Azerbaycan'ın (`isProperNoun = true`)
 
 #### getCaseSuffix
 
