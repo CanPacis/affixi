@@ -16,12 +16,15 @@ import {
   getCaseSuffix,
   Case,
   makeCase,
+  getQuestionSuffix,
+  makeQuestion,
+  makeRelative,
 } from '../main';
 
 test('Component getter', () => {
-  expect(util.getComponents('isim')).toEqual({ letter: 'm', vowel: 'i' });
-  expect(util.getComponents('araç')).toEqual({ letter: 'ç', vowel: 'a' });
-  expect(util.getComponents('kaya')).toEqual({ letter: 'a', vowel: 'a' });
+  expect(util.getComponents('isim')).toEqual({ letter: 'm', vowel: 'i', syllableCount: 2 });
+  expect(util.getComponents('araç')).toEqual({ letter: 'ç', vowel: 'a', syllableCount: 2 });
+  expect(util.getComponents('kaya')).toEqual({ letter: 'a', vowel: 'a', syllableCount: 2 });
 });
 
 test('List duplicater', () => {
@@ -36,10 +39,10 @@ test('Sounds object generation', () => {
 });
 
 test('Query plural', () => {
-  expect(getPluralSuffix('Araba')).toBe('lar');
-  expect(getPluralSuffix('İsim')).toBe('ler');
-  expect(getPluralSuffix('kanaat')).toBe('lar');
-  expect(getPluralSuffix('elit')).toBe('ler');
+  expect(getPluralSuffix('Araba')).toEqual({ suffix: 'lar', prefix: '', infix: '' });
+  expect(getPluralSuffix('İsim')).toEqual({ suffix: 'ler', prefix: '', infix: '' });
+  expect(getPluralSuffix('kanaat')).toEqual({ suffix: 'lar', prefix: '', infix: '' });
+  expect(getPluralSuffix('elit')).toEqual({ suffix: 'ler', prefix: '', infix: '' });
 });
 
 test('Create plural', () => {
@@ -51,10 +54,10 @@ test('Create plural', () => {
 });
 
 test('Query equality suffix', () => {
-  expect(getEqualitySuffix('Çocuk')).toBe('ça');
-  expect(getEqualitySuffix('Bebek')).toBe('çe');
-  expect(getEqualitySuffix('akıllı')).toBe('ca');
-  expect(getEqualitySuffix('sebepsiz')).toBe('ce');
+  expect(getEqualitySuffix('Çocuk')).toEqual({ suffix: 'ça', prefix: '', infix: '' });
+  expect(getEqualitySuffix('Bebek')).toEqual({ suffix: 'çe', prefix: '', infix: '' });
+  expect(getEqualitySuffix('akıllı')).toEqual({ suffix: 'ca', prefix: '', infix: '' });
+  expect(getEqualitySuffix('sebepsiz')).toEqual({ suffix: 'ce', prefix: '', infix: '' });
 });
 
 test('Make noun equal', () => {
@@ -100,16 +103,16 @@ test('Alter word to vowel dropped version', () => {
 });
 
 test('Query possesive suffix', () => {
-  expect(getPossesiveSuffix('Çocuk', Pronoun.SingularFirst)).toBe('um');
-  expect(getPossesiveSuffix('Bebek', Pronoun.SingularSecond)).toBe('in');
-  expect(getPossesiveSuffix('Sebep', Pronoun.SingularThird)).toBe('i');
-  expect(getPossesiveSuffix('Akıl', Pronoun.PluralFirst)).toBe('ımız');
-  expect(getPossesiveSuffix('Merak', Pronoun.PluralSecond)).toBe('ınız');
-  expect(getPossesiveSuffix('Ağaç', Pronoun.PluralThird)).toBe('ları');
-  expect(getPossesiveSuffix('araba', Pronoun.SingularThird)).toBe('sı');
-  expect(getPossesiveSuffix('araba', Pronoun.SingularFirst)).toBe('m');
-  expect(getPossesiveSuffix('kaçak', Pronoun.SingularThird)).toBe('ı');
-  expect(getPossesiveSuffix('bitki', Pronoun.SingularThird)).toBe('si');
+  expect(getPossesiveSuffix('Çocuk', Pronoun.SingularFirst)).toEqual({ suffix: 'um', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('Bebek', Pronoun.SingularSecond)).toEqual({ suffix: 'in', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('Sebep', Pronoun.SingularThird)).toEqual({ suffix: 'i', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('Akıl', Pronoun.PluralFirst)).toEqual({ suffix: 'ımız', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('Merak', Pronoun.PluralSecond)).toEqual({ suffix: 'ınız', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('Ağaç', Pronoun.PluralThird)).toEqual({ suffix: 'ları', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('araba', Pronoun.SingularThird)).toEqual({ suffix: 'ı', infix: 's', prefix: '' });
+  expect(getPossesiveSuffix('araba', Pronoun.SingularFirst)).toEqual({ suffix: 'm', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('kaçak', Pronoun.SingularThird)).toEqual({ suffix: 'ı', infix: '', prefix: '' });
+  expect(getPossesiveSuffix('bitki', Pronoun.SingularThird)).toEqual({ suffix: 'i', infix: 's', prefix: '' });
 });
 
 test('Make noun possesive', () => {
@@ -131,11 +134,12 @@ test('Make noun possesive', () => {
 });
 
 test('Query complete suffix', () => {
-  expect(getCompleteSuffix(makePlural('Araba'))).toBe('ın');
-  expect(getCompleteSuffix(makePlural('O'))).toBe('ın');
+  expect(getCompleteSuffix(makePlural('Araba'))).toEqual({ suffix: 'ın', prefix: '', infix: '' });
+  expect(getCompleteSuffix(makePlural('O'))).toEqual({ suffix: 'ın', prefix: '', infix: '' });
 });
 
 test('Make noun complete', () => {
+  expect(makeComplete("Azerbaycan", true)).toBe("Azerbaycan'ın")
   expect(makeComplete(makePlural('O'))).toBe('Onların');
   expect(`${makeComplete(makePlural('O'))} ${makePossesive('araba', Pronoun.PluralThird)}`).toBe('Onların arabaları');
   expect(makeComplete('araç')).toBe('aracın');
@@ -143,12 +147,12 @@ test('Make noun complete', () => {
 });
 
 test('Query case suffix', () => {
-  expect(getCaseSuffix('Kağıt', Case.Accusative)).toBe('ı');
-  expect(getCaseSuffix('Ev', Case.Ablative)).toBe('den');
-  expect(getCaseSuffix('Kalem', Case.Instrumental)).toBe('le');
-  expect(getCaseSuffix('Bardak', Case.Absolute)).toBe('');
-  expect(getCaseSuffix('Araba', Case.Dative)).toBe('ya');
-  expect(getCaseSuffix('Ofis', Case.Locative)).toBe('te');
+  expect(getCaseSuffix('Kağıt', Case.Accusative)).toEqual({ suffix: 'ı', infix: '', prefix: '' });
+  expect(getCaseSuffix('Ev', Case.Ablative)).toEqual({ suffix: 'den', infix: '', prefix: '' });
+  expect(getCaseSuffix('Kalem', Case.Instrumental)).toEqual({ suffix: 'le', infix: '', prefix: '' });
+  expect(getCaseSuffix('Bardak', Case.Absolute)).toEqual({ suffix: '', infix: '', prefix: '' });
+  expect(getCaseSuffix('Araba', Case.Dative)).toEqual({ suffix: 'a', infix: 'y', prefix: '' });
+  expect(getCaseSuffix('Ofis', Case.Locative)).toEqual({ suffix: 'te', infix: '', prefix: '' });
 });
 
 test('Make noun case', () => {
@@ -161,6 +165,8 @@ test('Make noun case', () => {
   expect(makeCase('Kalem', Case.Instrumental)).toBe('Kalemle');
   expect(makeCase('Bardak', Case.Absolute)).toBe('Bardak');
   expect(makeCase('Araba', Case.Dative)).toBe('Arabaya');
+  expect(makeCase('Araba', Case.Locative)).toBe('Arabada');
+  expect(makeCase('Araba', Case.Ablative)).toBe('Arabadan');
   expect(makeCase('Ofis', Case.Locative)).toBe('Ofiste');
   expect(makeCase('Hanı', Case.Locative)).toBe('Hanında');
   expect(makeCase('Hanı', Case.Accusative)).toBe('Hanını');
@@ -170,4 +176,30 @@ test('Make noun case', () => {
   );
   expect(makeCase('Hasan Paşa Hanı', Case.Locative, true)).toBe("Hasan Paşa Hanı'nda");
   expect(makeCase('Diyarbakır Ulu Cami', Case.Locative, true)).toBe("Diyarbakır Ulu Cami'nde");
+});
+
+test('Query question suffix/preposition', () => {
+  expect(getQuestionSuffix('Kağıt')).toEqual({ suffix: ' mı', infix: '', prefix: '' });
+  expect(getQuestionSuffix('Ev')).toEqual({ suffix: ' mi', infix: '', prefix: '' });
+  expect(getQuestionSuffix('Kök')).toEqual({ suffix: ' mü', infix: '', prefix: '' });
+  expect(getQuestionSuffix('Kuyruk')).toEqual({ suffix: ' mu', infix: '', prefix: '' });
+});
+
+test('Make noun interrogatvie', () => {
+  expect(makeQuestion('Kağıt')).toBe('Kağıt mı');
+  expect(makeQuestion('Ev')).toBe('Ev mi');
+  expect(makeQuestion('Kök')).toBe('Kök mü');
+  expect(makeQuestion('Kuyruk')).toBe('Kuyruk mu');
+});
+
+test('Make noun relative', () => {
+  expect(makeRelative('Ali', Pronoun.SingularSecond, true)).toBe("Ali'ninki");
+});
+
+test('Misc tests', () => {
+  expect(makePossesive('Çakmak', Pronoun.PluralSecond)).toBe('Çakmağınız');
+  expect(makePossesive(makePlural('Çakmak'), Pronoun.SingularThird)).toBe('Çakmakları');
+  expect(makeCase('Kek', Case.Dative)).toBe('Keke');
+  expect(makeCase('Çakmak', Case.Dative)).toBe('Çakmağa');
+  expect(util.concat('AVM', getCaseSuffix('aveme', Case.Ablative), true)).toBe("AVM'den");
 });

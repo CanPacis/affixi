@@ -43,7 +43,7 @@ npm install affixi
 There is no default export in the library, so you can import whatever you need and only the things you need. This makes the library tree-shakable.
 
 ```typescript
-import { makePlural, makePossesive, Pronoun } from 'affixi';
+import { makePlural, makePossesive, Pronoun, Case } from 'affixi';
 
 makePlural('O'); // Onlar
 makePossesive('Akıl', Pronoun.PluralFirst); // Aklımız
@@ -154,10 +154,10 @@ e.g:
 #### makeComplete
 
 ```typescript
-makeComplete(base: string) => string
+makeComplete(base: string, isProperNoun: boolean = false) => string
 ```
 
-Returns the word base concatenated with the appropriate completion suffix for a given noun.
+Returns the word base concatenated with the appropriate completion suffix for a given noun. If `isProperNoun` is true, the suffix is seperate with an apostrophe
 
 e.g:
 
@@ -173,9 +173,9 @@ getCaseSuffix(base: string, _case: Case) => string
 
 Returns the appropriate case suffix for a given base word and a [case](#case)
 
-- `makeCase('Ev', Case.Ablative) // den`
-- `makeCase('Şehir', Case.Dative) // e`
-- `makeCase('Sinema', Case.Dative) // ya`
+- `getCaseSuffix('Ev', Case.Ablative) // den`
+- `getCaseSuffix('Şehir', Case.Dative) // e`
+- `getCaseSuffix('Sinema', Case.Dative) // ya`
 
 #### makeCase
 
@@ -309,7 +309,7 @@ I think this one is pretty self-explanatory.
 
 ```typescript
 enum Case {
-  Absolute,
+  Absolute, // yalın
   Accusative, // -i
   Ablative, // -den
   Locative, // -de
