@@ -154,10 +154,10 @@ e.g:
 #### makeComplete
 
 ```typescript
-makeComplete(base: string) => string
+makeComplete(base: string, isProperNoun: boolean = false) => string
 ```
 
-Returns the word base concatenated with the appropriate completion suffix for a given noun.
+Returns the word base concatenated with the appropriate completion suffix for a given noun. If `isProperNoun` is true, the suffix is seperate with an apostrophe
 
 e.g:
 
