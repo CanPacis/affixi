@@ -193,6 +193,8 @@ test('Make compunder noun', () => {
   expect(makeCompounder('Akıl')).toBe('Aklın');
   expect(makeCompounder('Köprü')).toBe('Köprünün');
   expect(makeCompounder('Kahverenk')).toBe('Kahverengin');
+  expect(makeCompounder('Hukuk')).toBe('Hukukun');
+  expect(makeCompounder('Süt')).toBe('Sütün');
 });
 
 test('Query compoundee suffix', () => {

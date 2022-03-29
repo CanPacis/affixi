@@ -97,7 +97,7 @@ export const exceptions = {
   unvoiced: ['hukuk', 'bilet', 'tabiat', 'devlet', 'bisiklet', 'millet', 'ahret', 'ahiret', 'merak'],
   /** Unvoiced single syllable exceptions that does soften with a vowel suffix immediately after */
   unvoicedSingleSyllable: ['uç'],
-  /** Unvoiced single syllable exceptions that does soften with a vowel suffix immediately after */
+  /** Exceptions that need to be filled when made plural */
   plural: ['o'],
   /** Limited list of words that drop their vowe upon a cretain condition */
   vowelDrop: [

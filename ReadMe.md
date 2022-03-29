@@ -16,12 +16,18 @@ A helper library for Turkish noun suffixes written in typescript.
 - [makeComplete](#makeComplete)
 - [getCaseSuffix](#getCaseSuffix)
 - [makeCase](#makeCase)
+- [getCompoundSuffix](#getCompoundSuffix)
+- [makeCompound](#makeCompound)
 - [getVoicedConsonant](#getVoicedConsonant)
 - [alterToVoicedConsonant](#alterToVoicedConsonant)
 - [alterToVowelDrop](#alterToVowelDrop)
 - [util](#util)
   - [getComponents](#getComponents)
   - [getSyllableCount](#getSyllableCount)
+
+### Classes
+
+- [AffixiWord](#AffixiWord)
 
 ### Objects
 
@@ -31,6 +37,11 @@ A helper library for Turkish noun suffixes written in typescript.
 
 - [Pronoun](#pronoun)
 - [Case](#case)
+- [Compound](#compound)
+
+### Interfaces
+
+- [AffixiWordState](#AffixiWordState)
 
 ## Usage
 
@@ -128,7 +139,7 @@ makePossesive(base: string, pronoun: Pronoun, isProperNoun: boolean = false) => 
 
 Returns the word base concatenated with the appropriate possesive suffix for a given noun and [pronoun](#pronoun).
 
-Proper nouns are seperated with and apostrophe character.
+Proper nouns are seperated with an apostrophe character.
 
 e.g:
 
@@ -164,7 +175,7 @@ e.g:
 - Araba > Araba(n)ın > Arabanın
 - Onlar > Onların
 - Eller > Ellerin
-- Eller > Ellerin 
+- Eller > Ellerin
 - Azerbaycan > Azerbaycan'ın (`isProperNoun = true`)
 
 #### getCaseSuffix
@@ -186,12 +197,39 @@ makeCase(base: string, _case: Case, isProperNoun: boolean = false) => string
 ```
 
 Returns the word base concatenated with the appropriate case suffix for a given base word and a [case](#case)
-Proper nouns are seperated with and apostrophe character.
+Proper nouns are seperated with an apostrophe character.
 
 - `makeCase('Ev', Case.Ablative) // Evden`
 - `makeCase('Balıkesir', Case.Ablative, true) // Balıkesir'den`
 - `makeCase('Şehir', Case.Dative) // Şehre`
 - `makeCase('Sinema', Case.Dative) // Sinemaya`
+
+#### getCompoundSuffix
+
+```typescript
+getCompoundSuffix(base: string, compound: Compound) => string
+```
+
+Returns the appropriate compound suffix for a given base word and a [compound](#compound)
+
+- `getCompoundSuffix('Köprü', Compound.Compounder) // nün`
+- `getCompoundSuffix('Öğretmen', Compound.Compounder) // in`
+- `getCompoundSuffix('Köprü', Compound.Compoundee) // sü`
+- `getCompoundSuffix('Akıl', Compound.Compoundee) // ı`
+
+#### makeCompound
+
+```typescript
+makeCompound(base: string, compound: Compound, isProperNoun: boolean = false) => string
+```
+
+Returns the word base concatenated with the appropriate compound suffix for a given base word and a [compound](#compound)
+Proper nouns are seperated with an apostrophe character.
+
+- `makeCompound('Köprü', Compound.Compounder) // Köprünün`
+- `makeCompound('Öğretmen', Compound.Compounder) // Öğretmenin`
+- `makeCompound('Köprü', Compound.Compoundee) // Köprüsü`
+- `makeCompound('Akıl', Compound.Compoundee) // Aklı`
 
 #### getVoicedConsonant
 
@@ -267,6 +305,82 @@ This method returns the syllable count of a base word. Almost always the syllaba
 - Elma > 2
 - Süpermarket > 4
 
+### Classes
+
+#### AffixiWord
+
+`AffixiWord` is a construct that makes it easier to handle nouns in a complex manner. It holds a state that can be undone and handles aspects like compoundness in itslef. It has a `toString` method that returns the resulting word and can be used with `String(word)`. All its methods apart from toString return the instance itself so they are chainable.
+
+##### Properties
+
+```typescript
+  base: string; // Given base word
+  word: string; // Current state of the word
+  isCompound: boolean;
+  isProperNoun: boolean;
+  history: AffixiWordState[] = [];
+```
+
+**See: [AffixiWordState](#AffixiWordState)**
+
+##### Methods
+
+###### AffixiWord.makeCompound
+
+Concatenates the word with the appropriate compound suffix for a given compound type.
+
+```typescript
+makeCompound(type: Compound): AffixiWord
+```
+
+###### AffixiWord.makeCase
+
+Concatenates the word with the appropriate case suffix for a given case.
+
+```typescript
+makeCase(_case: Case): AffixiWord
+```
+
+###### AffixiWord.makeComplete
+
+Concatenates the word with the completion suffix.
+
+```typescript
+makeComplete(): AffixiWord
+```
+
+###### AffixiWord.makePossesive
+
+Concatenates the word with the possesive suffix for a given pronoun.
+
+```typescript
+  makePossesive(pronoun: Pronoun): AffixiWord
+```
+
+###### AffixiWord.makeEqual
+
+Transforms the word into equal form.
+
+```typescript
+makeEqual(): AffixiWord
+```
+
+###### AffixiWord.makePlural
+
+Transforms the word into plural form.
+
+```typescript
+makePlural(): AffixiWord
+```
+
+###### AffixiWord.undo
+
+Undoes the last operation
+
+```typescript
+undo(): AffixiWord
+```
+
 ### Objects
 
 #### sounds
@@ -321,3 +435,26 @@ enum Case {
 ```
 
 Turkish noun case names.
+
+#### Compound
+
+```typescript
+enum Compound {
+  Compounder, // tamlayan
+  Compoundee, // tamlanan
+}
+```
+
+Turkish compound types
+
+### Interfaces
+
+#### AffixiWordState
+
+```typescript
+export interface AffixiWordState {
+  word: string;
+  isCompound: boolean;
+  isProperNoun: boolean;
+}
+```
