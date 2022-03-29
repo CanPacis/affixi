@@ -470,10 +470,6 @@ export const getCaseSuffix = (base: string, _case: Case): string => {
       }
       break;
     case Case.Locative:
-      if (sounds.vowels.includes(letter)) {
-        infix = 'n';
-      }
-
       if (sounds.unvoicedConsonants.includes(letter)) {
         result = 't';
       } else {
