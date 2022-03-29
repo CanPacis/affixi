@@ -16,6 +16,10 @@ import {
   getCaseSuffix,
   Case,
   makeCase,
+  getCompounderSuffix,
+  makeCompounder,
+  getCompoundeeSuffix,
+  makeCompoundee,
 } from '../main';
 
 test('Component getter', () => {
@@ -155,21 +159,53 @@ test('Query case suffix', () => {
 test('Make noun case', () => {
   expect(makeCase('Kağıt', Case.Accusative)).toBe('Kağıdı');
   expect(makeCase(makePossesive('Ses', Pronoun.SingularThird), Case.Instrumental)).toBe('Sesiyle');
-  expect(makeCase(makePossesive('Ses', Pronoun.SingularThird), Case.Ablative)).toBe('Sesinden');
+  expect(makeCase(makePossesive('Ses', Pronoun.SingularThird), Case.Ablative, false, true)).toBe('Sesinden');
   expect(makeCase('Ev', Case.Ablative)).toBe('Evden');
+  expect(makeCase('Araba', Case.Ablative)).toBe('Arabadan');
+  expect(makeCase('Hanı', Case.Ablative, false, true)).toBe('Hanından');
   expect(makeCase('Şehir', Case.Dative)).toBe('Şehre');
+  expect(makeCase('Araba', Case.Dative)).toBe('Arabaya');
+  expect(makeCase(makePossesive('Ses', Pronoun.SingularThird), Case.Dative, false, true)).toBe('Sesine');
   expect(makeCase('Sinema', Case.Dative)).toBe('Sinemaya');
+  expect(makeCase('Köprü', Case.Instrumental)).toBe('Köprüyle');
+  expect(makeCase(makeCompoundee('Köprü'), Case.Instrumental)).toBe('Köprüsüyle');
   expect(makeCase('Kalem', Case.Instrumental)).toBe('Kalemle');
   expect(makeCase('Bardak', Case.Absolute)).toBe('Bardak');
   expect(makeCase('Araba', Case.Dative)).toBe('Arabaya');
   expect(makeCase('Araba', Case.Locative)).toBe('Arabada');
   expect(makeCase('Ofis', Case.Locative)).toBe('Ofiste');
-  // expect(makeCase('Hanı', Case.Locative)).toBe('Hanında');
-  // expect(makeCase('Hanı', Case.Accusative)).toBe('Hanını');
-  // expect(makeCase('Hanı', Case.Locative, true)).toBe("Hanı'nda");
-  // expect(makeCase(makePossesive('Ongözlü Köprü', Pronoun.SingularThird), Case.Locative, true)).toBe(
-  //   "Ongözlü Köprüsü'nde",
-  // );
-  // expect(makeCase('Hasan Paşa Hanı', Case.Locative, true)).toBe("Hasan Paşa Hanı'nda");
-  // expect(makeCase('Diyarbakır Ulu Cami', Case.Locative, true)).toBe("Diyarbakır Ulu Cami'nde");
+  expect(makeCase(makeCompoundee('Köprü'), Case.Locative, false, true)).toBe('Köprüsünde');
+  expect(makeCase(makeCompoundee('Han'), Case.Locative, true, true)).toBe("Hanı'nda");
+});
+
+test('Query compounder suffix', () => {
+  expect(getCompounderSuffix('Köprü')).toBe('nün');
+  expect(getCompounderSuffix('Han')).toBe('ın');
+  expect(getCompounderSuffix('Camisi')).toBe('nin');
+  expect(getCompounderSuffix('Müdür')).toBe('ün');
+  expect(getCompounderSuffix('Kablo')).toBe('nun');
+  expect(getCompounderSuffix('Öğretmen')).toBe('in');
+});
+
+test('Make compunder noun', () => {
+  expect(makeCompounder('Akıl')).toBe('Aklın');
+  expect(makeCompounder('Köprü')).toBe('Köprünün');
+  expect(makeCompounder('Kahverenk')).toBe('Kahverengin');
+});
+
+test('Query compoundee suffix', () => {
+  expect(getCompoundeeSuffix('Kağıt')).toBe('ı');
+  expect(getCompoundeeSuffix('Köprü')).toBe('sü');
+  expect(getCompoundeeSuffix('Han')).toBe('ı');
+  expect(getCompoundeeSuffix('Camisi')).toBe('si');
+  expect(getCompoundeeSuffix('Müdür')).toBe('ü');
+  expect(getCompoundeeSuffix('Kablo')).toBe('su');
+  expect(getCompoundeeSuffix('Öğretmen')).toBe('i');
+});
+
+test('Make compundee noun', () => {
+  expect(makeCompoundee('Kağıt')).toBe('Kağıdı');
+  expect(makeCompoundee('Akıl')).toBe('Aklı');
+  expect(makeCompoundee('Köprü')).toBe('Köprüsü');
+  expect(makeCompoundee('Kahverenk')).toBe('Kahverengi');
 });

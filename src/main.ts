@@ -33,6 +33,13 @@ export enum Case {
   Dative,
 }
 
+export enum Compound {
+  /** Tamlayan */
+  Compounder,
+  /** Tamlanan */
+  Compoundee,
+}
+
 interface Util {
   duplicateToUppercase: (list: string[]) => string[];
   getComponents: (base: string) => WordComponent;
@@ -424,7 +431,7 @@ export const makeComplete = (base: string, isProperNoun: boolean = false): strin
 /** Returns the appropriate case suffix for a given base word and a case -
  * Verilen kelimeye ve hâle uygun hâl ekini döndürür.
  */
-export const getCaseSuffix = (base: string, _case: Case): string => {
+export const getCaseSuffix = (base: string, _case: Case, isCompound: boolean = false): string => {
   const { vowel, letter } = util.getComponents(base);
   let result: string;
   let infix = '';
@@ -453,7 +460,7 @@ export const getCaseSuffix = (base: string, _case: Case): string => {
       }
       break;
     case Case.Ablative:
-      if (sounds.vowels.includes(letter)) {
+      if (isCompound) {
         infix = 'n';
       }
 
@@ -470,6 +477,10 @@ export const getCaseSuffix = (base: string, _case: Case): string => {
       }
       break;
     case Case.Locative:
+      if (isCompound) {
+        infix = 'n';
+      }
+
       if (sounds.unvoicedConsonants.includes(letter)) {
         result = 't';
       } else {
@@ -495,7 +506,11 @@ export const getCaseSuffix = (base: string, _case: Case): string => {
       break;
     case Case.Dative:
       if (sounds.vowels.includes(letter)) {
-        infix = 'y';
+        if (isCompound) {
+          infix = 'n';
+        } else {
+          infix = 'y';
+        }
       }
 
       if (sounds.frontVowels.includes(vowel)) {
@@ -510,10 +525,15 @@ export const getCaseSuffix = (base: string, _case: Case): string => {
 };
 
 /** Returns the word base concatenated with the appropriate case suffix for a given base word and a case
- * Verilen kelimeye uygun hâl ekini ekler
+ * Verilen kelimeye ve hâle uygun hâl ekini ekler
  */
-export const makeCase = (base: string, _case: Case, isProperNoun: boolean = false): string => {
-  const suffix = getCaseSuffix(base, _case);
+export const makeCase = (
+  base: string,
+  _case: Case,
+  isProperNoun: boolean = false,
+  isCompound: boolean = false,
+): string => {
+  const suffix = getCaseSuffix(base, _case, isCompound);
   const punctuation = isProperNoun ? "'" : '';
   let word = _case === Case.Absolute ? base : alterToVoicedConsonant(base);
   const firstLetter = suffix[0];
@@ -523,4 +543,120 @@ export const makeCase = (base: string, _case: Case, isProperNoun: boolean = fals
   }
 
   return word + punctuation + suffix;
+};
+
+/** Returns the appropriate compounder suffix for a given base word -
+ * Verilen kelimeye uygun tamlayan ekini döndürür.
+ */
+export const getCompounderSuffix = (base: string): string => {
+  const { vowel, letter } = util.getComponents(base);
+
+  let infix = '';
+  let result = '';
+
+  if (sounds.vowels.includes(letter)) {
+    infix += 'n';
+  }
+
+  if (sounds.unRoundedVowels.includes(vowel)) {
+    if (sounds.frontVowels.includes(vowel)) {
+      result += 'ın';
+    } else {
+      result += 'in';
+    }
+  } else {
+    if (sounds.frontVowels.includes(vowel)) {
+      result += 'un';
+    } else {
+      result += 'ün';
+    }
+  }
+
+  return infix + result;
+};
+
+/** Returns the word base concatenated with the appropriate compounder suffix for a given base word
+ * Verilen kelimeye uygun tamalayan ekini ekler
+ */
+export const makeCompounder = (base: string, isProperNoun: boolean = false): string => {
+  const suffix = getCompounderSuffix(base);
+  const punctuation = isProperNoun ? "'" : '';
+  let word = alterToVoicedConsonant(base);
+  const firstLetter = suffix[0];
+
+  if (sounds.vowels.includes(firstLetter)) {
+    word = alterToVowelDrop(word);
+  }
+
+  return word + punctuation + suffix;
+};
+
+/** Returns the appropriate compoundee suffix for a given base word -
+ * Verilen kelimeye uygun tamlanan ekini döndürür.
+ */
+export const getCompoundeeSuffix = (base: string): string => {
+  const { vowel, letter } = util.getComponents(base);
+
+  let infix = '';
+  let result = '';
+
+  if (sounds.vowels.includes(letter)) {
+    infix += 's';
+  }
+
+  if (sounds.unRoundedVowels.includes(vowel)) {
+    if (sounds.frontVowels.includes(vowel)) {
+      result += 'ı';
+    } else {
+      result += 'i';
+    }
+  } else {
+    if (sounds.frontVowels.includes(vowel)) {
+      result += 'u';
+    } else {
+      result += 'ü';
+    }
+  }
+
+  return infix + result;
+};
+
+/** Returns the word base concatenated with the appropriate compoundee suffix for a given base word
+ * Verilen kelimeye uygun tamalanan ekini ekler
+ */
+export const makeCompoundee = (base: string, isProperNoun: boolean = false): string => {
+  const suffix = getCompoundeeSuffix(base);
+  const punctuation = isProperNoun ? "'" : '';
+  let word = alterToVoicedConsonant(base);
+  const firstLetter = suffix[0];
+
+  if (sounds.vowels.includes(firstLetter)) {
+    word = alterToVowelDrop(word);
+  }
+
+  return word + punctuation + suffix;
+};
+
+/** Returns the appropriate case suffix for a given base word and a compound type -
+ * Verilen kelimeye ve tamlama tipine uygun tamlama ekini döndürür.
+ */
+export const getCompoundSuffix = (base: string, type: Compound): string => {
+  switch (type) {
+    case Compound.Compoundee:
+      return getCompoundeeSuffix(base);
+    case Compound.Compounder:
+      return getCompounderSuffix(base);
+  }
+};
+
+/** Returns the word base concatenated with the appropriate compound suffix for a given base word and a compound type
+ * Verilen kelimeye ve tamlama tipine uygun tamlama ekini ekler
+ */
+export const makeCompound = (base: string, type: Compound): string => {
+  switch (type) {
+    case Compound.Compoundee:
+      return makeCompoundee(base);
+    case Compound.Compounder:
+      return makeCompounder(base);
+  }
 };
