@@ -133,6 +133,7 @@ test('Make noun possesive', () => {
   expect(makePossesive('renk', Pronoun.SingularThird)).toBe('rengi');
   expect(makePossesive('Uç', Pronoun.SingularThird)).toBe('Ucu');
   expect(makePossesive('Süt', Pronoun.SingularThird)).toBe('Sütü');
+  expect(makePossesive('Ömür', Pronoun.SingularFirst)).toBe('Ömrüm');
 });
 
 test('Query complete suffix', () => {

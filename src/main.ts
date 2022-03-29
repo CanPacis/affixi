@@ -101,23 +101,31 @@ export const exceptions = {
   plural: ['o'],
   /** Limited list of words that drop their vowe upon a cretain condition */
   vowelDrop: [
-    'oğul',
+    'ağız',
+    'akıl',
+    "alın",
     'bağır',
     'beyin',
-    'burun',
-    'ağız',
-    'karın',
-    'şehir',
-    'nehir',
-    'akıl',
-    'göğüs',
-    'devir',
-    'seyir',
-    'kayıp',
-    'hapis',
-    'zulüm',
-    'gönül',
     'boyun',
+    'burun',
+    'çevir',
+    'devir',
+    'emir',
+    'fikir',
+    'göğüs',
+    'gönül',
+    'hapis',
+    'isim',
+    'karın',
+    'kayıp',
+    'nehir',
+    'oğul',
+    'ömür',
+    'sabır',
+    'seyir',
+    'şehir',
+    'şekil',
+    'zulüm',
   ],
 };
 
@@ -681,6 +689,9 @@ export class AffixiWord {
     this.word = this.base;
   }
 
+  /** Concatenates the word with the appropriate compound suffix for a given compound type -
+   * Kelimeye verilen tamlama tipine uygun tamlama ekini ekler
+   */
   makeCompound(type: Compound): AffixiWord {
     this.commit();
     this.word = makeCompound(this.word, type, this.isProperNoun);
@@ -688,18 +699,27 @@ export class AffixiWord {
     return this;
   }
 
+  /** Concatenates the word with the appropriate case suffix for a given case -
+   * Kelimeye verilen hâle uygun hâl ekini ekler
+   */
   makeCase(_case: Case): AffixiWord {
     this.commit();
     this.word = makeCase(this.word, _case, this.isProperNoun, this.isCompound);
     return this;
   }
 
+  /** Concatenates the word with the completion suffix -
+   * Kelimeye uygun tamlayan ekini ekler; e.g 'Araç' -> 'Aracın'
+   */
   makeComplete(): AffixiWord {
     this.commit();
     this.word = makeComplete(this.word, this.isProperNoun);
     return this;
   }
 
+  /** Concatenates the word with the possesive suffix for a given pronoun -
+   * Kelimeye verilen zamire uygun iyelik ekini ekler
+   */
   makePossesive(pronoun: Pronoun): AffixiWord {
     this.commit();
     this.word = makePossesive(this.word, pronoun, this.isProperNoun);
@@ -707,12 +727,18 @@ export class AffixiWord {
     return this;
   }
 
+  /** Transforms the word into equal form -
+   * Kelimeye eşitlik ekini ekler; e.g 'Çocuk' -> 'Çocukça'
+   */
   makeEqual(): AffixiWord {
     this.commit();
     this.word = makeEqual(this.word);
     return this;
   }
 
+  /** Transforms the word into plural form -
+   * Kelimeyi çoğul hale getirir
+   */
   makePlural(): AffixiWord {
     this.commit();
     this.word = makePlural(this.word);
@@ -727,6 +753,7 @@ export class AffixiWord {
     this.history.push({ word: this.word, isCompound: this.isCompound, isProperNoun: this.isProperNoun });
   }
 
+  /** Undoes the last operation */
   undo(): AffixiWord {
     let oldState = this.history.pop();
     if (oldState) {
@@ -734,7 +761,7 @@ export class AffixiWord {
       this.isCompound = oldState.isCompound;
       this.isProperNoun = oldState.isProperNoun;
     }
-    return this
+    return this;
   }
 
   toString(): string {
