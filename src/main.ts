@@ -652,11 +652,92 @@ export const getCompoundSuffix = (base: string, type: Compound): string => {
 /** Returns the word base concatenated with the appropriate compound suffix for a given base word and a compound type
  * Verilen kelimeye ve tamlama tipine uygun tamlama ekini ekler
  */
-export const makeCompound = (base: string, type: Compound): string => {
+export const makeCompound = (base: string, type: Compound, isProperNoun: boolean = false): string => {
   switch (type) {
     case Compound.Compoundee:
-      return makeCompoundee(base);
+      return makeCompoundee(base, isProperNoun);
     case Compound.Compounder:
-      return makeCompounder(base);
+      return makeCompounder(base, isProperNoun);
   }
 };
+
+/** Represents a state of word at a given time with properties like isCompound and isProperNoun */
+export interface AffixiWordState {
+  word: string;
+  isCompound: boolean;
+  isProperNoun: boolean;
+}
+
+/** AffixiWord is a construct that makes it easier to handle nouns in a complex manner.
+ * It holds a state that can be undone and handles aspects like compoundness in itslef.
+ * It has a toString method that returns the resulting word and can be used with String(word).
+ * All its methods apart from toString return the instance itself so they are chainable.
+ */
+export class AffixiWord {
+  isCompound = false;
+  word: string;
+  history: AffixiWordState[] = [];
+  constructor(public base: string, public isProperNoun: boolean = false) {
+    this.word = this.base;
+  }
+
+  makeCompound(type: Compound): AffixiWord {
+    this.commit();
+    this.word = makeCompound(this.word, type, this.isProperNoun);
+    this.isCompound = true;
+    return this;
+  }
+
+  makeCase(_case: Case): AffixiWord {
+    this.commit();
+    this.word = makeCase(this.word, _case, this.isProperNoun, this.isCompound);
+    return this;
+  }
+
+  makeComplete(): AffixiWord {
+    this.commit();
+    this.word = makeComplete(this.word, this.isProperNoun);
+    return this;
+  }
+
+  makePossesive(pronoun: Pronoun): AffixiWord {
+    this.commit();
+    this.word = makePossesive(this.word, pronoun, this.isProperNoun);
+    this.isCompound = true;
+    return this;
+  }
+
+  makeEqual(): AffixiWord {
+    this.commit();
+    this.word = makeEqual(this.word);
+    return this;
+  }
+
+  makePlural(): AffixiWord {
+    this.commit();
+    this.word = makePlural(this.word);
+    return this;
+  }
+
+  private commit(): void {
+    if (this.history.length >= 20) {
+      this.history.shift();
+    }
+
+    this.history.push({ word: this.word, isCompound: this.isCompound, isProperNoun: this.isProperNoun });
+  }
+
+  undo(): AffixiWord {
+    let oldState = this.history.pop();
+    if (oldState) {
+      this.word = oldState.word;
+      this.isCompound = oldState.isCompound;
+      this.isProperNoun = oldState.isProperNoun;
+    }
+    return this
+  }
+
+  toString(): string {
+    return this.word;
+  }
+}

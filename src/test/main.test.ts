@@ -20,6 +20,7 @@ import {
   makeCompounder,
   getCompoundeeSuffix,
   makeCompoundee,
+  AffixiWord,
 } from '../main';
 
 test('Component getter', () => {
@@ -208,4 +209,18 @@ test('Make compundee noun', () => {
   expect(makeCompoundee('Akıl')).toBe('Aklı');
   expect(makeCompoundee('Köprü')).toBe('Köprüsü');
   expect(makeCompoundee('Kahverenk')).toBe('Kahverengi');
+});
+
+test('Test AffixiWord construct', () => {
+  let ses = new AffixiWord('Ses');
+
+  ses.makePossesive(Pronoun.SingularThird).makeCase(Case.Ablative);
+  expect(ses.toString()).toBe('Sesinden');
+  ses.undo();
+  expect(ses.toString()).toBe('Sesi');
+  ses.makeCase(Case.Ablative);
+  expect(ses.history.length).toBe(2);
+  ses.undo().undo();
+  expect(ses.toString()).toBe('Ses');
+  expect(ses.isCompound).toBe(false);
 });
