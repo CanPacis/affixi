@@ -226,4 +226,14 @@ test('Test AffixiWord construct', () => {
   ses.undo().undo();
   expect(ses.toString()).toBe('Ses');
   expect(ses.isCompound).toBe(false);
+  ses.makePossesive(Pronoun.SingularFirst).makeCase(Case.Ablative);
+  expect(ses.toString()).toBe('Sesimden');
+  ses.undo();
+  ses.undo();
+  ses.makePossesive(Pronoun.SingularSecond).makeCase(Case.Ablative);
+  expect(ses.toString()).toBe('Sesinden');
+  ses.undo();
+  ses.undo();
+  ses.makePossesive(Pronoun.SingularThird).makeCase(Case.Ablative);
+  expect(ses.toString()).toBe('Sesinden');
 });

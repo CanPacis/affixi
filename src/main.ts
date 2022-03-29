@@ -468,7 +468,7 @@ export const getCaseSuffix = (base: string, _case: Case, isCompound: boolean = f
       }
       break;
     case Case.Ablative:
-      if (isCompound) {
+      if (sounds.vowels.includes(letter) && isCompound) {
         infix = 'n';
       }
 
@@ -485,7 +485,7 @@ export const getCaseSuffix = (base: string, _case: Case, isCompound: boolean = f
       }
       break;
     case Case.Locative:
-      if (isCompound) {
+      if (sounds.vowels.includes(letter) && isCompound) {
         infix = 'n';
       }
 
