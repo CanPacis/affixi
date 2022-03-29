@@ -755,7 +755,7 @@ export class AffixiWord {
 
   /** Undoes the last operation */
   undo(): AffixiWord {
-    let oldState = this.history.pop();
+    const oldState = this.history.pop();
     if (oldState) {
       this.word = oldState.word;
       this.isCompound = oldState.isCompound;
