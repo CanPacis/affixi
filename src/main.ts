@@ -103,7 +103,7 @@ export const exceptions = {
   vowelDrop: [
     'ağız',
     'akıl',
-    "alın",
+    'alın',
     'bağır',
     'beyin',
     'boyun',
@@ -363,7 +363,9 @@ export const getPossesiveSuffix = (base: string, pronoun: Pronoun): string => {
       }
       break;
     case Pronoun.PluralThird:
-      if (sounds.backVowels.includes(vowelSuffix)) {
+      let targetVowel = vowelSuffix !== '' ? vowelSuffix : vowel;
+
+      if (sounds.backVowels.includes(targetVowel)) {
         result += 'leri';
       } else {
         result += 'ları';
@@ -397,43 +399,20 @@ export const makePossesive = (base: string, pronoun: Pronoun, isProperNoun: bool
  * Verilen kelimeye uygun tamlayan ekini döndürür; e.g 'Araç' -> 'ın'
  */
 export const getCompleteSuffix = (base: string): string => {
-  const { vowel } = util.getComponents(base);
-  let result: string;
-
-  if (sounds.frontVowels.includes(vowel)) {
-    if (sounds.roundedVowels.includes(vowel)) {
-      result = 'un';
-    } else {
-      result = 'ın';
-    }
-  } else {
-    if (sounds.roundedVowels.includes(vowel)) {
-      result = 'ün';
-    } else {
-      result = 'in';
-    }
-  }
-
-  return result;
+  console.warn(
+    '[Affixi] getCompleteSuffix function is deprecated and will be removed. Please use getCompoundSuffix(base, Compound.Compounder)',
+  );
+  return getCompounderSuffix(base);
 };
 
 /** Concatenates the word with the completion suffix for a given base -
  * Verilen kelimeye uygun tamlayan ekini ekler; e.g 'Araç' -> 'Aracın'
  */
 export const makeComplete = (base: string, isProperNoun: boolean = false): string => {
-  const suffix = getCompleteSuffix(base);
-  const firstLetter = suffix[0];
-  let root: string;
-
-  const word = alterToVowelDrop(base);
-  if (sounds.vowels.includes(firstLetter)) {
-    root = alterToVoicedConsonant(word);
-  } else {
-    root = word;
-  }
-
-  const punctuation = isProperNoun ? "'" : '';
-  return root + punctuation + suffix;
+  console.warn(
+    '[Affixi] makeComplete function is deprecated and will be removed. Please use makeCompound(base, Compound.Compounder)',
+  );
+  return makeCompound(base, Compound.Compounder, isProperNoun);
 };
 
 /** Returns the appropriate case suffix for a given base word and a case -
@@ -556,7 +535,7 @@ export const makeCase = (
 /** Returns the appropriate compounder suffix for a given base word -
  * Verilen kelimeye uygun tamlayan ekini döndürür.
  */
-export const getCompounderSuffix = (base: string): string => {
+const getCompounderSuffix = (base: string): string => {
   const { vowel, letter } = util.getComponents(base);
 
   let infix = '';
@@ -583,26 +562,10 @@ export const getCompounderSuffix = (base: string): string => {
   return infix + result;
 };
 
-/** Returns the word base concatenated with the appropriate compounder suffix for a given base word
- * Verilen kelimeye uygun tamalayan ekini ekler
- */
-export const makeCompounder = (base: string, isProperNoun: boolean = false): string => {
-  const suffix = getCompounderSuffix(base);
-  const punctuation = isProperNoun ? "'" : '';
-  let word = alterToVoicedConsonant(base);
-  const firstLetter = suffix[0];
-
-  if (sounds.vowels.includes(firstLetter)) {
-    word = alterToVowelDrop(word);
-  }
-
-  return word + punctuation + suffix;
-};
-
 /** Returns the appropriate compoundee suffix for a given base word -
  * Verilen kelimeye uygun tamlanan ekini döndürür.
  */
-export const getCompoundeeSuffix = (base: string): string => {
+const getCompoundeeSuffix = (base: string): string => {
   const { vowel, letter } = util.getComponents(base);
 
   let infix = '';
@@ -629,22 +592,6 @@ export const getCompoundeeSuffix = (base: string): string => {
   return infix + result;
 };
 
-/** Returns the word base concatenated with the appropriate compoundee suffix for a given base word
- * Verilen kelimeye uygun tamalanan ekini ekler
- */
-export const makeCompoundee = (base: string, isProperNoun: boolean = false): string => {
-  const suffix = getCompoundeeSuffix(base);
-  const punctuation = isProperNoun ? "'" : '';
-  let word = alterToVoicedConsonant(base);
-  const firstLetter = suffix[0];
-
-  if (sounds.vowels.includes(firstLetter)) {
-    word = alterToVowelDrop(word);
-  }
-
-  return word + punctuation + suffix;
-};
-
 /** Returns the appropriate case suffix for a given base word and a compound type -
  * Verilen kelimeye ve tamlama tipine uygun tamlama ekini döndürür.
  */
@@ -661,11 +608,29 @@ export const getCompoundSuffix = (base: string, type: Compound): string => {
  * Verilen kelimeye ve tamlama tipine uygun tamlama ekini ekler
  */
 export const makeCompound = (base: string, type: Compound, isProperNoun: boolean = false): string => {
+  let suffix, firstLetter;
+  let punctuation = isProperNoun ? "'" : '';
+  let word = alterToVoicedConsonant(base);
+
   switch (type) {
     case Compound.Compoundee:
-      return makeCompoundee(base, isProperNoun);
+      suffix = getCompoundeeSuffix(base);
+      firstLetter = suffix[0];
+
+      if (sounds.vowels.includes(firstLetter)) {
+        word = alterToVowelDrop(word);
+      }
+
+      return word + punctuation + suffix;
     case Compound.Compounder:
-      return makeCompounder(base, isProperNoun);
+      suffix = getCompounderSuffix(base);
+      firstLetter = suffix[0];
+
+      if (sounds.vowels.includes(firstLetter)) {
+        word = alterToVowelDrop(word);
+      }
+
+      return word + punctuation + suffix;
   }
 };
 
@@ -708,15 +673,6 @@ export class AffixiWord {
     return this;
   }
 
-  /** Concatenates the word with the completion suffix -
-   * Kelimeye uygun tamlayan ekini ekler; e.g 'Araç' -> 'Aracın'
-   */
-  makeComplete(): AffixiWord {
-    this.commit();
-    this.word = makeComplete(this.word, this.isProperNoun);
-    return this;
-  }
-
   /** Concatenates the word with the possesive suffix for a given pronoun -
    * Kelimeye verilen zamire uygun iyelik ekini ekler
    */
@@ -750,7 +706,11 @@ export class AffixiWord {
       this.history.shift();
     }
 
-    this.history.push({ word: this.word, isCompound: this.isCompound, isProperNoun: this.isProperNoun });
+    this.history.push({
+      word: this.word,
+      isCompound: this.isCompound,
+      isProperNoun: this.isProperNoun,
+    });
   }
 
   /** Undoes the last operation */

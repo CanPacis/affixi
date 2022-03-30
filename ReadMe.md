@@ -12,8 +12,6 @@ A helper library for Turkish noun suffixes written in typescript.
 - [makeEqual](#makeEqual)
 - [getPossesiveSuffix](#getPossesiveSuffix)
 - [makePossesive](#makePossesive)
-- [getCompleteSuffix](#getCompleteSuffix)
-- [makeComplete](#makeComplete)
 - [getCaseSuffix](#getCaseSuffix)
 - [makeCase](#makeCase)
 - [getCompoundSuffix](#getCompoundSuffix)
@@ -147,36 +145,6 @@ e.g:
 - `getPossesiveSuffix("Çocuk", Pronoun.SingularSecond) // Çocuğun`
 - `getPossesiveSuffix("Sen", Pronoun.SingularSecond) // Senin`
 - `getPossesiveSuffix("Ayşe", Pronoun.SingularFirst, true) // Ayşe'm`
-
-#### getCompleteSuffix
-
-```typescript
-getCompleteSuffix(base: string) => string
-```
-
-Returns the appropriate completion suffix for a given noun. These types of suffixes are affected by vowel harmony.
-
-e.g:
-
-- Araba > ın
-- Onlar > ın
-- Eller > in
-
-#### makeComplete
-
-```typescript
-makeComplete(base: string, isProperNoun: boolean = false) => string
-```
-
-Returns the word base concatenated with the appropriate completion suffix for a given noun. If `isProperNoun` is set to true, the suffix is seperated with an apostrophe.
-
-e.g:
-
-- Araba > Araba(n)ın > Arabanın
-- Onlar > Onların
-- Eller > Ellerin
-- Eller > Ellerin
-- Azerbaycan > Azerbaycan'ın (`isProperNoun = true`)
 
 #### getCaseSuffix
 

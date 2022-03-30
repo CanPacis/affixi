@@ -16,11 +16,10 @@ import {
   getCaseSuffix,
   Case,
   makeCase,
-  getCompounderSuffix,
-  makeCompounder,
-  getCompoundeeSuffix,
-  makeCompoundee,
+  getCompoundSuffix,
+  makeCompound,
   AffixiWord,
+  Compound,
 } from '../main';
 
 test('Component getter', () => {
@@ -134,19 +133,21 @@ test('Make noun possesive', () => {
   expect(makePossesive('Uç', Pronoun.SingularThird)).toBe('Ucu');
   expect(makePossesive('Süt', Pronoun.SingularThird)).toBe('Sütü');
   expect(makePossesive('Ömür', Pronoun.SingularFirst)).toBe('Ömrüm');
+  expect(makePossesive('Ses', Pronoun.PluralThird)).toBe('Sesleri');
+  expect(makePossesive('Süt', Pronoun.PluralSecond)).toBe('Sütünüz');
 });
 
-test('Query complete suffix', () => {
-  expect(getCompleteSuffix(makePlural('Araba'))).toBe('ın');
-  expect(getCompleteSuffix(makePlural('O'))).toBe('ın');
-});
+// test('Query complete suffix', () => {
+//   expect(getCompleteSuffix(makePlural('Araba'))).toBe('ın');
+//   expect(getCompleteSuffix(makePlural('O'))).toBe('ın');
+// });
 
-test('Make noun complete', () => {
-  expect(makeComplete(makePlural('O'))).toBe('Onların');
-  expect(`${makeComplete(makePlural('O'))} ${makePossesive('araba', Pronoun.PluralThird)}`).toBe('Onların arabaları');
-  expect(makeComplete('araç')).toBe('aracın');
-  expect(`${makeComplete('araç')} ${makePossesive('renk', Pronoun.SingularThird)}`).toBe('aracın rengi');
-});
+// test('Make noun complete', () => {
+//   expect(makeComplete(makePlural('O'))).toBe('Onların');
+//   expect(`${makeComplete(makePlural('O'))} ${makePossesive('araba', Pronoun.PluralThird)}`).toBe('Onların arabaları');
+//   expect(makeComplete('araç')).toBe('aracın');
+//   expect(`${makeComplete('araç')} ${makePossesive('renk', Pronoun.SingularThird)}`).toBe('aracın rengi');
+// });
 
 test('Query case suffix', () => {
   expect(getCaseSuffix('Kağıt', Case.Accusative)).toBe('ı');
@@ -170,48 +171,71 @@ test('Make noun case', () => {
   expect(makeCase(makePossesive('Ses', Pronoun.SingularThird), Case.Dative, false, true)).toBe('Sesine');
   expect(makeCase('Sinema', Case.Dative)).toBe('Sinemaya');
   expect(makeCase('Köprü', Case.Instrumental)).toBe('Köprüyle');
-  expect(makeCase(makeCompoundee('Köprü'), Case.Instrumental)).toBe('Köprüsüyle');
+  expect(makeCase(makeCompound('Köprü', Compound.Compoundee), Case.Instrumental)).toBe('Köprüsüyle');
   expect(makeCase('Kalem', Case.Instrumental)).toBe('Kalemle');
   expect(makeCase('Bardak', Case.Absolute)).toBe('Bardak');
   expect(makeCase('Araba', Case.Dative)).toBe('Arabaya');
   expect(makeCase('Araba', Case.Locative)).toBe('Arabada');
   expect(makeCase('Ofis', Case.Locative)).toBe('Ofiste');
-  expect(makeCase(makeCompoundee('Köprü'), Case.Locative, false, true)).toBe('Köprüsünde');
-  expect(makeCase(makeCompoundee('Han'), Case.Locative, true, true)).toBe("Hanı'nda");
+  expect(makeCase(makeCompound('Köprü', Compound.Compoundee), Case.Locative, false, true)).toBe('Köprüsünde');
+  expect(makeCase(makeCompound('Han', Compound.Compoundee), Case.Locative, true, true)).toBe("Hanı'nda");
 });
 
 test('Query compounder suffix', () => {
-  expect(getCompounderSuffix('Köprü')).toBe('nün');
-  expect(getCompounderSuffix('Han')).toBe('ın');
-  expect(getCompounderSuffix('Camisi')).toBe('nin');
-  expect(getCompounderSuffix('Müdür')).toBe('ün');
-  expect(getCompounderSuffix('Kablo')).toBe('nun');
-  expect(getCompounderSuffix('Öğretmen')).toBe('in');
+  expect(getCompoundSuffix('Köprü', Compound.Compounder)).toBe('nün');
+  expect(getCompoundSuffix('Han', Compound.Compounder)).toBe('ın');
+  expect(getCompoundSuffix('Camisi', Compound.Compounder)).toBe('nin');
+  expect(getCompoundSuffix('Müdür', Compound.Compounder)).toBe('ün');
+  expect(getCompoundSuffix('Kablo', Compound.Compounder)).toBe('nun');
+  expect(getCompoundSuffix('Öğretmen', Compound.Compounder)).toBe('in');
 });
 
 test('Make compunder noun', () => {
-  expect(makeCompounder('Akıl')).toBe('Aklın');
-  expect(makeCompounder('Köprü')).toBe('Köprünün');
-  expect(makeCompounder('Kahverenk')).toBe('Kahverengin');
-  expect(makeCompounder('Hukuk')).toBe('Hukukun');
-  expect(makeCompounder('Süt')).toBe('Sütün');
+  expect(makeCompound('Akıl', Compound.Compounder)).toBe('Aklın');
+  expect(makeCompound('Köprü', Compound.Compounder)).toBe('Köprünün');
+  expect(makeCompound('Kahverenk', Compound.Compounder)).toBe('Kahverengin');
+  expect(makeCompound('Hukuk', Compound.Compounder)).toBe('Hukukun');
+  expect(makeCompound('Süt', Compound.Compounder)).toBe('Sütün');
+  expect(makeCompound('Azerbaycan', Compound.Compounder, true)).toBe("Azerbaycan'ın");
 });
 
 test('Query compoundee suffix', () => {
-  expect(getCompoundeeSuffix('Kağıt')).toBe('ı');
-  expect(getCompoundeeSuffix('Köprü')).toBe('sü');
-  expect(getCompoundeeSuffix('Han')).toBe('ı');
-  expect(getCompoundeeSuffix('Camisi')).toBe('si');
-  expect(getCompoundeeSuffix('Müdür')).toBe('ü');
-  expect(getCompoundeeSuffix('Kablo')).toBe('su');
-  expect(getCompoundeeSuffix('Öğretmen')).toBe('i');
+  expect(getCompoundSuffix('Kağıt', Compound.Compoundee)).toBe('ı');
+  expect(getCompoundSuffix('Köprü', Compound.Compoundee)).toBe('sü');
+  expect(getCompoundSuffix('Han', Compound.Compoundee)).toBe('ı');
+  expect(getCompoundSuffix('Camisi', Compound.Compoundee)).toBe('si');
+  expect(getCompoundSuffix('Müdür', Compound.Compoundee)).toBe('ü');
+  expect(getCompoundSuffix('Kablo', Compound.Compoundee)).toBe('su');
+  expect(getCompoundSuffix('Öğretmen', Compound.Compoundee)).toBe('i');
 });
 
 test('Make compundee noun', () => {
-  expect(makeCompoundee('Kağıt')).toBe('Kağıdı');
-  expect(makeCompoundee('Akıl')).toBe('Aklı');
-  expect(makeCompoundee('Köprü')).toBe('Köprüsü');
-  expect(makeCompoundee('Kahverenk')).toBe('Kahverengi');
+  expect(makeCompound('Kağıt', Compound.Compoundee)).toBe('Kağıdı');
+  expect(makeCompound('Akıl', Compound.Compoundee)).toBe('Aklı');
+  expect(makeCompound('Köprü', Compound.Compoundee)).toBe('Köprüsü');
+  expect(makeCompound('Kahverenk', Compound.Compoundee)).toBe('Kahverengi');
+});
+
+test('Make compound phrase', () => {
+  expect(
+    `Siyah ${makeCompound('araba', Compound.Compounder)} çirkin ${makeCompound('anahtar', Compound.Compoundee)}`,
+  ).toBe('Siyah arabanın çirkin anahtarı');
+  expect(
+    `Siyah ${makeCompound('araba', Compound.Compounder)} çirkin ${makeCompound(
+      makePlural('anahtar'),
+      Compound.Compoundee,
+    )}`,
+  ).toBe('Siyah arabanın çirkin anahtarları');
+  expect(`${makeCompound('araç', Compound.Compounder)} ${makeCompound('renk', Compound.Compoundee)}`).toBe(
+    'aracın rengi',
+  );
+  expect(`kestane ${makeCompound('bal', Compound.Compoundee)}`).toBe('kestane balı');
+  expect(
+    `kestane ${makeCompound(makeCompound('bal', Compound.Compoundee), Compound.Compounder)} ${makeCompound(
+      'diyar',
+      Compound.Compoundee,
+    )}`,
+  ).toBe('kestane balının diyarı');
 });
 
 test('Test AffixiWord construct', () => {
