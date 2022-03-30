@@ -363,7 +363,7 @@ export const getPossesiveSuffix = (base: string, pronoun: Pronoun): string => {
       }
       break;
     case Pronoun.PluralThird:
-      let targetVowel = vowelSuffix !== '' ? vowelSuffix : vowel;
+      const targetVowel = vowelSuffix !== '' ? vowelSuffix : vowel;
 
       if (sounds.backVowels.includes(targetVowel)) {
         result += 'leri';
@@ -608,9 +608,10 @@ export const getCompoundSuffix = (base: string, type: Compound): string => {
  * Verilen kelimeye ve tamlama tipine uygun tamlama ekini ekler
  */
 export const makeCompound = (base: string, type: Compound, isProperNoun: boolean = false): string => {
-  let suffix, firstLetter;
-  let punctuation = isProperNoun ? "'" : '';
+  let suffix;
+  let firstLetter;
   let word = alterToVoicedConsonant(base);
+  const punctuation = isProperNoun ? "'" : '';
 
   switch (type) {
     case Compound.Compoundee:
