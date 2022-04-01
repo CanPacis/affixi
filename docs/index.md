@@ -1,37 +1,428 @@
-## Welcome to GitHub Pages
+# Affixi
 
-You can use the [editor on GitHub](https://github.com/CanPacis/affixi/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+A helper library for Turkish noun suffixes written in typescript.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Table
 
-### Markdown
+### Functions
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+- [getPluralSuffix](#getPluralSuffix)
+- [makePlural](#makePlural)
+- [getEqualitySuffix](#getEqualitySuffix)
+- [makeEqual](#makeEqual)
+- [getPossesiveSuffix](#getPossesiveSuffix)
+- [makePossesive](#makePossesive)
+- [getCaseSuffix](#getCaseSuffix)
+- [makeCase](#makeCase)
+- [getCompoundSuffix](#getCompoundSuffix)
+- [makeCompound](#makeCompound)
+- [getVoicedConsonant](#getVoicedConsonant)
+- [alterToVoicedConsonant](#alterToVoicedConsonant)
+- [alterToVowelDrop](#alterToVowelDrop)
+- [util](#util)
+  - [getComponents](#getComponents)
+  - [getSyllableCount](#getSyllableCount)
 
-```markdown
-Syntax highlighted code block
+### Classes
 
-# Header 1
-## Header 2
-### Header 3
+- [AffixiWord](#AffixiWord)
 
-- Bulleted
-- List
+### Objects
 
-1. Numbered
-2. List
+- [sounds](#sounds)
 
-**Bold** and _Italic_ and `Code` text
+### Enums
 
-[Link](url) and ![Image](src)
+- [Pronoun](#pronoun)
+- [Case](#case)
+- [Compound](#compound)
+
+### Interfaces
+
+- [AffixiWordState](#AffixiWordState)
+
+## Usage
+
+install
+
+```bash
+npm install affixi
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+There is no default export in the library, so you can import whatever you need and only the things you need. This makes the library tree-shakable.
 
-### Jekyll Themes
+```typescript
+import { makePlural, makePossesive, Pronoun } from 'affixi';
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/CanPacis/affixi/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+makePlural('O'); // Onlar
+makePossesive('Akıl', Pronoun.PluralFirst); // Aklımız
+makeCase(makePossesive('Ongözlü Köprü', Pronoun.SingularThird), Case.Locative, true); // Ongözlü Köprüsü'nde
+```
 
-### Support or Contact
+## Reference
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+### Functions
+
+#### getPluralSuffix
+
+```typescript
+getPluralSuffix(base: string) => string
+```
+
+Returns the appropriate plural suffix for a given noun. Suffixes are affected by vowel harmony rules.
+
+e.g:
+
+- Araç > lar
+- Bebek > ler
+
+#### makePlural
+
+```typescript
+makePlural(base: string) => string
+```
+
+Returns the word base concatenated with the appropriate plural suffix for a given noun.
+
+e.g:
+
+- Araç > Araçlar
+- Bebek > Bebekler
+
+#### getEqualitySuffix
+
+```typescript
+getEqualitySuffix(base: string) => string
+```
+
+Returns the appropriate equality suffix for a given noun. These types of suffixes are affected by both vowel harmony, consonant softening, consonant assimilation and buch of other rules.
+
+e.g:
+
+- Çocuk > ça
+- Sen > ce
+
+#### makeEqual
+
+```typescript
+makeEqual(base: string) => string
+```
+
+Returns the word base concatenated with the appropriate equality suffix for a given noun.
+
+e.g:
+
+- Çocuk > Çocukça
+- Sen > Sence
+
+#### getPossesiveSuffix
+
+```typescript
+getPossesiveSuffix(base: string, pronoun: Pronoun) => string
+```
+
+Returns the appropriate possesive suffix for a given noun and pronoun. These types of suffixes are affected by vowel harmony and given [pronoun](#pronoun).
+
+e.g:
+
+- `getPossesiveSuffix("Çocuk", Pronoun.SingularFirst) // um`
+- `getPossesiveSuffix("Çocuk", Pronoun.SingularSecond) // un`
+- `getPossesiveSuffix("Sen", Pronoun.SingularSecond) // in`
+
+#### makePossesive
+
+```typescript
+makePossesive(base: string, pronoun: Pronoun, isProperNoun: boolean = false) => string
+```
+
+Returns the word base concatenated with the appropriate possesive suffix for a given noun and [pronoun](#pronoun).
+
+Proper nouns are seperated with an apostrophe character.
+
+e.g:
+
+- `getPossesiveSuffix("Çocuk", Pronoun.SingularFirst) // Çocuğum`
+- `getPossesiveSuffix("Çocuk", Pronoun.SingularSecond) // Çocuğun`
+- `getPossesiveSuffix("Sen", Pronoun.SingularSecond) // Senin`
+- `getPossesiveSuffix("Ayşe", Pronoun.SingularFirst, true) // Ayşe'm`
+
+#### getCaseSuffix
+
+```typescript
+getCaseSuffix(base: string, _case: Case) => string
+```
+
+Returns the appropriate case suffix for a given base word and a [case](#case)
+
+- `makeCase('Ev', Case.Ablative) // den`
+- `makeCase('Şehir', Case.Dative) // e`
+- `makeCase('Sinema', Case.Dative) // ya`
+
+#### makeCase
+
+```typescript
+makeCase(base: string, _case: Case, isProperNoun: boolean = false) => string
+```
+
+Returns the word base concatenated with the appropriate case suffix for a given base word and a [case](#case)
+Proper nouns are seperated with an apostrophe character.
+
+- `makeCase('Ev', Case.Ablative) // Evden`
+- `makeCase('Balıkesir', Case.Ablative, true) // Balıkesir'den`
+- `makeCase('Şehir', Case.Dative) // Şehre`
+- `makeCase('Sinema', Case.Dative) // Sinemaya`
+
+#### getCompoundSuffix
+
+```typescript
+getCompoundSuffix(base: string, compound: Compound) => string
+```
+
+Returns the appropriate compound suffix for a given base word and a [compound](#compound)
+
+- `getCompoundSuffix('Köprü', Compound.Compounder) // nün`
+- `getCompoundSuffix('Öğretmen', Compound.Compounder) // in`
+- `getCompoundSuffix('Köprü', Compound.Compoundee) // sü`
+- `getCompoundSuffix('Akıl', Compound.Compoundee) // ı`
+
+#### makeCompound
+
+```typescript
+makeCompound(base: string, compound: Compound, isProperNoun: boolean = false) => string
+```
+
+Returns the word base concatenated with the appropriate compound suffix for a given base word and a [compound](#compound)
+Proper nouns are seperated with an apostrophe character.
+
+- `makeCompound('Köprü', Compound.Compounder) // Köprünün`
+- `makeCompound('Öğretmen', Compound.Compounder) // Öğretmenin`
+- `makeCompound('Köprü', Compound.Compoundee) // Köprüsü`
+- `makeCompound('Akıl', Compound.Compoundee) // Aklı`
+
+#### getVoicedConsonant
+
+```typescript
+getVoicedConsonant(base: string) => string | undefined
+```
+
+Some words that end with an unvoiced consonants (p,ç,t,k) may be converted into their voiced counterparts (b,c,d,ğ). If extist, this function returns the voiced consonant. If not returns undefined.
+
+- Ağaç > c
+- Sebep > b
+- Akıllı > undefined
+
+#### alterToVoicedConsonant
+
+```typescript
+alterToVoicedConsonant(base: string) => string
+```
+
+This function returns the mutated version of a word with its voiced consonant. If base does not have a voiced counterpart, the base itself is returned.
+
+- Ağaç > Ağac
+- Sebep > Sebeb
+- Akıllı > Akıllı
+- Renk > Reng
+
+### alterToVowelDrop
+
+```typescript
+alterToVowelDrop(base: string) => string
+```
+
+Some two syllable words that has acute vowels in their last syllable drop that vowel after they are conjugated with a suffix. This function returns the words mutated version with the dropped vowel.
+
+**Note: Because certain words are subjected to this phenomenon, these words are kept in an exceptions array. Contributions to this limited list is appreciated.**
+
+- Akıl > Akl
+- Bağır > Bağr
+- Şehir > Şehr
+
+#### Util
+
+Some utility functions that may help word generation.
+
+##### getComponents
+
+```typescript
+util.getComponents(base: string) => WordComponent
+```
+
+This method returns the last letter and the last vowel in the last syllable of a given word. It returns a `WordComponent` interface.
+
+```typescript
+export interface WordComponent {
+  letter: string;
+  vowel: string;
+}
+```
+
+- Araba > `{ letter: "a", vowel: "a" }`
+- Oyuncak > `{ letter: "k", vowel: "a" }`
+- Sebep > `{ letter: "p", vowel: "e" }`
+
+##### getSyllableCount
+
+```typescript
+util.getSyllableCount(base: string) => number
+```
+
+This method returns the syllable count of a base word. Almost always the syllabale count of a word is equal to the vowel count of a word in Turkish because the stress is delimited by vowels.
+
+- Muvaffak > 3
+- Elma > 2
+- Süpermarket > 4
+
+### Classes
+
+#### AffixiWord
+
+`AffixiWord` is a construct that makes it easier to handle nouns in a complex manner. It holds a state that can be undone and handles aspects like compoundness in itslef. It has a `toString` method that returns the resulting word and can be used with `String(word)`. All its methods apart from toString return the instance itself so they are chainable.
+
+##### Properties
+
+```typescript
+  base: string; // Given base word
+  word: string; // Current state of the word
+  isCompound: boolean;
+  isProperNoun: boolean;
+  history: AffixiWordState[] = [];
+```
+
+**See: [AffixiWordState](#AffixiWordState)**
+
+##### Methods
+
+###### AffixiWord.makeCompound
+
+Concatenates the word with the appropriate compound suffix for a given compound type.
+
+```typescript
+makeCompound(type: Compound): AffixiWord
+```
+
+###### AffixiWord.makeCase
+
+Concatenates the word with the appropriate case suffix for a given case.
+
+```typescript
+makeCase(_case: Case): AffixiWord
+```
+
+###### AffixiWord.makeComplete
+
+Concatenates the word with the completion suffix.
+
+```typescript
+makeComplete(): AffixiWord
+```
+
+###### AffixiWord.makePossesive
+
+Concatenates the word with the possesive suffix for a given pronoun.
+
+```typescript
+  makePossesive(pronoun: Pronoun): AffixiWord
+```
+
+###### AffixiWord.makeEqual
+
+Transforms the word into equal form.
+
+```typescript
+makeEqual(): AffixiWord
+```
+
+###### AffixiWord.makePlural
+
+Transforms the word into plural form.
+
+```typescript
+makePlural(): AffixiWord
+```
+
+###### AffixiWord.undo
+
+Undoes the last operation
+
+```typescript
+undo(): AffixiWord
+```
+
+### Objects
+
+#### sounds
+
+Turkish sounds categorized by different metrics.
+
+```typescript
+interface sounds {
+  unvoicedStoppingConsonants: string[];
+  unvoicedContinuousConsonants: string[];
+  voicedStoppingConsonants: string[];
+  concatentorConsonants: string[];
+  unvoicedConsonants: string[];
+  roundedVowels: string[];
+  unRoundedVowels: string[];
+  backVowels: string[];
+  frontVowels: string[];
+  acuteVowels: string[];
+  wideVowels: string[];
+  vowels: string[];
+}
+```
+
+### Enums
+
+#### Pronoun
+
+```typescript
+enum Pronoun {
+  SingularFirst, // I
+  SingularSecond, // You (singular)
+  SingularThird, // He/She/It
+  PluralFirst, // We
+  PluralSecond, // You (plural)
+  PluralThird, // They
+}
+```
+
+I think this one is pretty self-explanatory.
+
+#### Case
+
+```typescript
+enum Case {
+  Absolute,
+  Accusative, // -i
+  Ablative, // -den
+  Locative, // -de
+  Instrumental, // -le
+  Dative, // -e
+}
+```
+
+Turkish noun case names.
+
+#### Compound
+
+```typescript
+enum Compound {
+  Compounder, // tamlayan
+  Compoundee, // tamlanan
+}
+```
+
+Turkish compound types
+
+### Interfaces
+
+#### AffixiWordState
+
+```typescript
+export interface AffixiWordState {
+  word: string;
+  isCompound: boolean;
+  isProperNoun: boolean;
+}
+```
