@@ -32,7 +32,7 @@
   "bugs": {
     "url": "https://github.com/CanPacis/affixi/issues"
   },
-  "homepage": "https://github.com/CanPacis/affixi#readme",
+  "homepage": "https://canpacis.github.io/affixi/",
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "jest": "^27.3.1",
