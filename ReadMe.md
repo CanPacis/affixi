@@ -144,7 +144,7 @@ e.g:
 - `makePossesive("Çocuk", Pronoun.SingularFirst) // Çocuğum`
 - `makePossesive("Çocuk", Pronoun.SingularSecond) // Çocuğun`
 - `makePossesive("Sen", Pronoun.SingularSecond) // Senin`
-- `makePossesive("Ayşe", Pronoun.SingularFirst) // Ayşe'm`
+- `makePossesive("Ayşe", Pronoun.SingularFirst, true) // Ayşe'm`
 
 #### getCaseSuffix
 
