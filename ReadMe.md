@@ -141,10 +141,10 @@ Proper nouns are seperated with an apostrophe character.
 
 e.g:
 
-- `getPossesiveSuffix("Çocuk", Pronoun.SingularFirst) // Çocuğum`
-- `getPossesiveSuffix("Çocuk", Pronoun.SingularSecond) // Çocuğun`
-- `getPossesiveSuffix("Sen", Pronoun.SingularSecond) // Senin`
-- `getPossesiveSuffix("Ayşe", Pronoun.SingularFirst, true) // Ayşe'm`
+- `makePossesive("Çocuk", Pronoun.SingularFirst) // Çocuğum`
+- `makePossesive("Çocuk", Pronoun.SingularSecond) // Çocuğun`
+- `makePossesive("Sen", Pronoun.SingularSecond) // Senin`
+- `makePossesive("Ayşe", Pronoun.SingularFirst) // Ayşe'm`
 
 #### getCaseSuffix
 

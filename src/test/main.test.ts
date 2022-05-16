@@ -135,6 +135,8 @@ test('Make noun possesive', () => {
   expect(makePossesive('Ömür', Pronoun.SingularFirst)).toBe('Ömrüm');
   expect(makePossesive('Ses', Pronoun.PluralThird)).toBe('Sesleri');
   expect(makePossesive('Süt', Pronoun.PluralSecond)).toBe('Sütünüz');
+  expect(makePossesive('Süt', Pronoun.PluralSecond)).toBe('Sütünüz');
+  expect(makePossesive('Monako', Pronoun.SingularSecond, true)).toBe('Monako\'n');
 });
 
 // test('Query complete suffix', () => {
@@ -197,6 +199,7 @@ test('Make compunder noun', () => {
   expect(makeCompound('Hukuk', Compound.Compounder)).toBe('Hukukun');
   expect(makeCompound('Süt', Compound.Compounder)).toBe('Sütün');
   expect(makeCompound('Azerbaycan', Compound.Compounder, true)).toBe("Azerbaycan'ın");
+  expect(makeCompound('Monako', Compound.Compounder, true)).toBe('Monako\'nun');
 });
 
 test('Query compoundee suffix', () => {
