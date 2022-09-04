@@ -99,7 +99,7 @@ export const util: Util = {
 
     if (coefficientIndex === 1) {
       const tensDigit = value.toString().split('').reverse()[1];
-      return tensMap[parseInt(tensDigit)] as string;
+      return tensMap[parseInt(tensDigit, 10)] as string;
     }
 
     if (coefficientIndex === 2) {
