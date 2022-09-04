@@ -11,8 +11,6 @@ import {
   makePossesive,
   alterToVowelDrop,
   Pronoun,
-  getCompleteSuffix,
-  makeComplete,
   getCaseSuffix,
   Case,
   makeCase,
@@ -136,20 +134,8 @@ test('Make noun possesive', () => {
   expect(makePossesive('Ses', Pronoun.PluralThird)).toBe('Sesleri');
   expect(makePossesive('Süt', Pronoun.PluralSecond)).toBe('Sütünüz');
   expect(makePossesive('Süt', Pronoun.PluralSecond)).toBe('Sütünüz');
-  expect(makePossesive('Monako', Pronoun.SingularSecond, true)).toBe('Monako\'n');
+  expect(makePossesive('Monako', Pronoun.SingularSecond, true)).toBe("Monako'n");
 });
-
-// test('Query complete suffix', () => {
-//   expect(getCompleteSuffix(makePlural('Araba'))).toBe('ın');
-//   expect(getCompleteSuffix(makePlural('O'))).toBe('ın');
-// });
-
-// test('Make noun complete', () => {
-//   expect(makeComplete(makePlural('O'))).toBe('Onların');
-//   expect(`${makeComplete(makePlural('O'))} ${makePossesive('araba', Pronoun.PluralThird)}`).toBe('Onların arabaları');
-//   expect(makeComplete('araç')).toBe('aracın');
-//   expect(`${makeComplete('araç')} ${makePossesive('renk', Pronoun.SingularThird)}`).toBe('aracın rengi');
-// });
 
 test('Query case suffix', () => {
   expect(getCaseSuffix('Kağıt', Case.Accusative)).toBe('ı');
@@ -190,6 +176,11 @@ test('Query compounder suffix', () => {
   expect(getCompoundSuffix('Müdür', Compound.Compounder)).toBe('ün');
   expect(getCompoundSuffix('Kablo', Compound.Compounder)).toBe('nun');
   expect(getCompoundSuffix('Öğretmen', Compound.Compounder)).toBe('in');
+  expect(getCompoundSuffix(5, Compound.Compounder)).toBe('in');
+  expect(getCompoundSuffix(10, Compound.Compounder)).toBe('un');
+  expect(getCompoundSuffix(150, Compound.Compounder)).toBe('nin');
+  expect(getCompoundSuffix(33, Compound.Compounder)).toBe('ün');
+  expect(getCompoundSuffix(30, Compound.Compounder)).toBe('un');
 });
 
 test('Make compunder noun', () => {
@@ -199,7 +190,7 @@ test('Make compunder noun', () => {
   expect(makeCompound('Hukuk', Compound.Compounder)).toBe('Hukukun');
   expect(makeCompound('Süt', Compound.Compounder)).toBe('Sütün');
   expect(makeCompound('Azerbaycan', Compound.Compounder, true)).toBe("Azerbaycan'ın");
-  expect(makeCompound('Monako', Compound.Compounder, true)).toBe('Monako\'nun');
+  expect(makeCompound('Monako', Compound.Compounder, true)).toBe("Monako'nun");
 });
 
 test('Query compoundee suffix', () => {
@@ -210,6 +201,11 @@ test('Query compoundee suffix', () => {
   expect(getCompoundSuffix('Müdür', Compound.Compoundee)).toBe('ü');
   expect(getCompoundSuffix('Kablo', Compound.Compoundee)).toBe('su');
   expect(getCompoundSuffix('Öğretmen', Compound.Compoundee)).toBe('i');
+  expect(getCompoundSuffix(5, Compound.Compoundee)).toBe('i');
+  expect(getCompoundSuffix(10, Compound.Compoundee)).toBe('u');
+  expect(getCompoundSuffix(150, Compound.Compoundee)).toBe('si');
+  expect(getCompoundSuffix(33, Compound.Compoundee)).toBe('ü');
+  expect(getCompoundSuffix(30, Compound.Compoundee)).toBe('u');
 });
 
 test('Make compundee noun', () => {
@@ -263,4 +259,51 @@ test('Test AffixiWord construct', () => {
   ses.undo();
   ses.makePossesive(Pronoun.SingularThird).makeCase(Case.Ablative);
   expect(ses.toString()).toBe('Sesinden');
+});
+
+test('Test number to string', () => {
+  // Basics
+  expect(util.getNumberText(0)).toBe('sıfır');
+  expect(util.getNumberText(1)).toBe('bir');
+  expect(util.getNumberText(2)).toBe('iki');
+  expect(util.getNumberText(3)).toBe('üç');
+  expect(util.getNumberText(4)).toBe('dört');
+  expect(util.getNumberText(5)).toBe('beş');
+  expect(util.getNumberText(6)).toBe('altı');
+  expect(util.getNumberText(7)).toBe('yedi');
+  expect(util.getNumberText(8)).toBe('sekiz');
+  expect(util.getNumberText(9)).toBe('dokuz');
+  expect(util.getNumberText(10)).toBe('on');
+  expect(util.getNumberText(20)).toBe('yirmi');
+  expect(util.getNumberText(30)).toBe('otuz');
+  expect(util.getNumberText(40)).toBe('kırk');
+  expect(util.getNumberText(50)).toBe('elli');
+  expect(util.getNumberText(60)).toBe('altmış');
+  expect(util.getNumberText(70)).toBe('yetmiş');
+  expect(util.getNumberText(80)).toBe('seksen');
+  expect(util.getNumberText(90)).toBe('doksan');
+  expect(util.getNumberText(100)).toBe('yüz');
+  expect(util.getNumberText(1_000)).toBe('bin');
+  expect(util.getNumberText(1_000_000)).toBe('milyon');
+  expect(util.getNumberText(1_000_000_000)).toBe('milyar');
+  expect(util.getNumberText(1_000_000_000_000)).toBe('trilyon');
+  expect(util.getNumberText(1_000_000_000_000_000)).toBe('trilyon');
+
+  // Complex
+  expect(util.getNumberText(346)).toBe('altı');
+  expect(util.getNumberText(3_847_261)).toBe('bir');
+  expect(util.getNumberText(48)).toBe('sekiz');
+  expect(util.getNumberText(94_835)).toBe('beş');
+  expect(util.getNumberText(8_372)).toBe('iki');
+  expect(util.getNumberText(27)).toBe('yedi');
+  expect(util.getNumberText(30)).toBe('otuz');
+  expect(util.getNumberText(5_000)).toBe('bin');
+  expect(util.getNumberText(1_938_470)).toBe('yetmiş');
+  expect(util.getNumberText(23_548_400)).toBe('yüz');
+  expect(util.getNumberText(2_348_000)).toBe('bin');
+  expect(util.getNumberText(2_340_000)).toBe('bin');
+  expect(util.getNumberText(2_300_000)).toBe('bin');
+  expect(util.getNumberText(21_000_000)).toBe('milyon');
+  expect(util.getNumberText(1_121_000_000)).toBe('milyon');
+  expect(util.getNumberText(12_000_000_000)).toBe('milyar');
 });
