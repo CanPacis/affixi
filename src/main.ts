@@ -44,7 +44,7 @@ interface Util {
   duplicateToUppercase: (list: string[]) => string[];
   getComponents: (base: string) => WordComponent;
   getSyllableCount: (base: string) => number;
-  getNumberText: (number: number) => string;
+  getNumberText: (value: number) => string;
 }
 
 export const util: Util = {
@@ -76,13 +76,13 @@ export const util: Util = {
 
     return count;
   },
-  getNumberText: (number: number): string => {
-    const numberString = number.toString();
+  getNumberText: (value: number): string => {
+    const numberString = value.toString();
     const map = ['sıfır', 'bir', 'iki', 'üç', 'dört', 'beş', 'altı', 'yedi', 'sekiz', 'dokuz'];
     const tensMap = [null, 'on', 'yirmi', 'otuz', 'kırk', 'elli', 'altmış', 'yetmiş', 'seksen', 'doksan'];
-    const lastDigit = number % 10;
+    const lastDigit = value % 10;
 
-    if (number === 0) {
+    if (value === 0) {
       return map[0];
     }
 
@@ -98,7 +98,7 @@ export const util: Util = {
     }
 
     if (coefficientIndex === 1) {
-      const tensDigit = number.toString().split('').reverse()[1];
+      const tensDigit = value.toString().split('').reverse()[1];
       return tensMap[parseInt(tensDigit)] as string;
     }
 
@@ -193,7 +193,7 @@ function transformBase(_base: BaseValue): string {
  * Eğer kelime sert ünsüz ile bitiyorsa, ünsüzün yumuşak halini, bitmiyorsa undefined döndürür
  */
 export const getVoicedConsonant = (_base: BaseValue, isProperNoun: boolean = false): string | undefined => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
 
   const { letter } = util.getComponents(base);
   if (
@@ -228,7 +228,7 @@ export const getVoicedConsonant = (_base: BaseValue, isProperNoun: boolean = fal
  * 'Akıl' -> 'Akıl'
  */
 export const alterToVoicedConsonant = (_base: BaseValue, isProperNoun: boolean = false): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const voicedCounterPart = getVoicedConsonant(base, isProperNoun);
 
   if (voicedCounterPart) {
@@ -249,7 +249,7 @@ export const alterToVoicedConsonant = (_base: BaseValue, isProperNoun: boolean =
  * e.g 'Bebek' -> 'Bebek'
  */
 export const alterToVowelDrop = (_base: BaseValue): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const { vowel } = util.getComponents(base);
   const word = base.trim();
 
@@ -270,7 +270,7 @@ export const alterToVowelDrop = (_base: BaseValue): string => {
  * Verilen kelimenin çoğul ekini dödürür
  */
 export const getPluralSuffix = (_base: BaseValue): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const { vowel } = util.getComponents(base);
   let result: string;
   let infix = '';
@@ -294,7 +294,7 @@ export const getPluralSuffix = (_base: BaseValue): string => {
  * Verilen kelimeyi çoğul hale getirir
  */
 export const makePlural = (_base: BaseValue): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   return `${base}${getPluralSuffix(base)}`;
 };
 
@@ -302,7 +302,7 @@ export const makePlural = (_base: BaseValue): string => {
  * Verilen kelimenin eşitlik ekini dödürür; e.g 'Çocuk' -> 'ça'
  */
 export const getEqualitySuffix = (_base: BaseValue): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const { vowel, letter } = util.getComponents(base);
   let result = '';
 
@@ -327,7 +327,7 @@ export const getEqualitySuffix = (_base: BaseValue): string => {
  * Verilen kelimeye eşitlik ekini ekler; e.g 'Çocuk' -> 'Çocukça'
  */
 export const makeEqual = (_base: BaseValue): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   return `${base}${getEqualitySuffix(base)}`;
 };
 
@@ -335,7 +335,7 @@ export const makeEqual = (_base: BaseValue): string => {
  * Verilen kelimeye ve zamire uygun iyelik ekini döndürür
  */
 export const getPossesiveSuffix = (_base: BaseValue, pronoun: Pronoun): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const { vowel, letter } = util.getComponents(base);
   let result = '';
   let infix = '';
@@ -448,7 +448,7 @@ export const getPossesiveSuffix = (_base: BaseValue, pronoun: Pronoun): string =
  * Verilen kelimeye ve zamire uygun iyelik ekini ekler
  */
 export const makePossesive = (_base: BaseValue, pronoun: Pronoun, isProperNoun: boolean = false): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const suffix = getPossesiveSuffix(base, pronoun);
   const firstLetter = suffix[0];
   let root: string;
@@ -468,7 +468,7 @@ export const makePossesive = (_base: BaseValue, pronoun: Pronoun, isProperNoun: 
  * Verilen kelimeye ve hâle uygun hâl ekini döndürür.
  */
 export const getCaseSuffix = (_base: BaseValue, _case: Case, isCompound: boolean = false): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const { vowel, letter } = util.getComponents(base);
   let result: string;
   let infix = '';
@@ -570,7 +570,7 @@ export const makeCase = (
   isProperNoun: boolean = false,
   isCompound: boolean = false,
 ): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const suffix = getCaseSuffix(base, _case, isCompound);
   const punctuation = isProperNoun ? "'" : '';
   let word = _case === Case.Absolute ? base : alterToVoicedConsonant(base);
@@ -587,7 +587,7 @@ export const makeCase = (
  * Verilen kelimeye uygun tamlayan ekini döndürür.
  */
 const getCompounderSuffix = (_base: BaseValue): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const { vowel, letter } = util.getComponents(base);
 
   let infix = '';
@@ -618,7 +618,7 @@ const getCompounderSuffix = (_base: BaseValue): string => {
  * Verilen kelimeye uygun tamlanan ekini döndürür.
  */
 const getCompoundeeSuffix = (_base: BaseValue): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   const { vowel, letter } = util.getComponents(base);
 
   let infix = '';
@@ -649,7 +649,7 @@ const getCompoundeeSuffix = (_base: BaseValue): string => {
  * Verilen kelimeye ve tamlama tipine uygun tamlama ekini döndürür.
  */
 export const getCompoundSuffix = (_base: BaseValue, type: Compound): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   switch (type) {
     case Compound.Compoundee:
       return getCompoundeeSuffix(base);
@@ -662,7 +662,7 @@ export const getCompoundSuffix = (_base: BaseValue, type: Compound): string => {
  * Verilen kelimeye ve tamlama tipine uygun tamlama ekini ekler
  */
 export const makeCompound = (_base: BaseValue, type: Compound, isProperNoun: boolean = false): string => {
-  let base = transformBase(_base);
+  const base = transformBase(_base);
   let suffix;
   let firstLetter;
   let word = alterToVoicedConsonant(base);
